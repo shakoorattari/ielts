@@ -1,5 +1,6 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { useProgress } from '../lib/progressContext';
+import { useCloudSync } from '../lib/cloudSyncContext';
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true },
@@ -13,6 +14,7 @@ const NAV_ITEMS = [
 
 export function Layout() {
   const { dueCount, streak } = useProgress();
+  const sync = useCloudSync();
 
   return (
     <div className="min-h-screen bg-canvas text-ink">
@@ -59,6 +61,17 @@ export function Layout() {
                 className="flex items-center gap-1 rounded-full bg-rose-100 px-2.5 py-1 text-rose-500"
               >
                 {dueCount} due
+              </NavLink>
+            )}
+            {sync.connected && (
+              <NavLink
+                to="/settings"
+                title={sync.status === 'error' ? `Sync error: ${sync.error}` : 'Synced across devices'}
+                className={`hidden items-center gap-1 rounded-full px-2.5 py-1 sm:flex ${
+                  sync.status === 'error' ? 'bg-rose-100 text-rose-500' : 'bg-mint-100 text-mint-500'
+                }`}
+              >
+                {sync.status === 'syncing' ? '↻' : sync.status === 'error' ? '⚠' : '☁'}
               </NavLink>
             )}
             <NavLink

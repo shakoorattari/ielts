@@ -27,6 +27,7 @@ interface ProgressContextValue {
   resetProgress: () => void;
   exportJSON: () => string;
   importJSON: (json: string) => void;
+  applySyncedState: (next: ProgressState) => void;
   dueCount: number;
   streak: number;
   studiedToday: boolean;
@@ -132,6 +133,8 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
 
   const importJSON = useCallback((json: string) => setState(importProgressJSON(json)), []);
 
+  const applySyncedState = useCallback((next: ProgressState) => setState(next), []);
+
   const dueCount = useMemo(() => {
     const now = Date.now();
     return ALL_ITEMS.reduce((count, item) => {
@@ -190,6 +193,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     resetProgress,
     exportJSON,
     importJSON,
+    applySyncedState,
     dueCount,
     streak,
     studiedToday,

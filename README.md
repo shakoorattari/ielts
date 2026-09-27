@@ -1,10 +1,13 @@
 # 1000 IELTS Collocations — Practice App
 
+**Live:** https://shakoorattari.github.io/ielts/
+
 A focused practice app for memorizing and actively using the **1000 IELTS collocations**
 (10 themes × 10 topics × 10 collocations each) needed for a Band 8 writing/speaking score.
 
 Built with React, TypeScript, Tailwind CSS, and a local spaced-repetition engine —
-no backend, no accounts. All progress is stored in your browser's `localStorage`.
+no backend, no accounts. Progress is stored in your browser's `localStorage`, with an
+optional opt-in sync to keep it consistent across devices (see below).
 
 ## Features
 
@@ -27,6 +30,29 @@ moves that collocation through the same new → learning → review → mastered
 In-progress rounds (current queue/question, index, running score) are persisted to
 `localStorage` as you go, so refreshing the page mid-session resumes exactly where you left
 off instead of starting over.
+
+## Syncing progress across devices
+
+By default all progress lives only in the browser you're using — a phone's Safari and a
+laptop's Chrome are two completely separate, unsynced copies. To share progress between
+devices, go to **Settings → Sync across devices**:
+
+1. Create a GitHub **classic** personal access token at
+   [github.com/settings/tokens](https://github.com/settings/tokens) → "Generate new token
+   (classic)" → check only the **`gist`** scope (nothing else) → generate.
+   (Fine-grained tokens don't support the Gists API, so it must be a classic token.)
+2. On your first device, paste the token into Settings under "Set up new sync" and click
+   **Enable sync**. This creates a private Gist to hold your progress and shows a **Sync ID**.
+3. On each additional device, open Settings → "Join existing", paste a token (the same one or
+   a separate token you create for that device — either works, as long as it's on the same
+   GitHub account) and the Sync ID from step 2, then **Enable sync**.
+
+After that, progress auto-syncs a few seconds after every change. The token and Sync ID are
+stored only in that browser's `localStorage` — never committed to the repo, never bundled
+into the built site. Merging is non-destructive: per-item mastery keeps whichever device
+reviewed it more recently, and streak days / attempts history / writing checks are unioned
+rather than overwritten, so syncing two devices with different progress never loses work from
+either side.
 
 ## Data
 
@@ -51,6 +77,11 @@ npm run preview
 The build output in `dist/` is a fully static site (uses hash-based routing), so it can be
 hosted anywhere — GitHub Pages, Netlify, Vercel, or just opened locally.
 
+## Deployment
+
+Every push to `main` triggers `.github/workflows/deploy.yml`, which builds the app and
+publishes `dist/` to GitHub Pages automatically — no manual deploy step.
+
 ## Project structure
 
 ```
@@ -65,6 +96,9 @@ src/
     useSessionStorage.ts   generic localStorage-backed useState for in-progress rounds
     attempts.ts            shared formatting helpers for the attempts history
     progressContext.tsx    React context exposing progress state + actions
+    gistSync.ts            GitHub Gist API calls for cross-device sync
+    mergeProgress.ts        non-destructive merge of two progress snapshots
+    cloudSyncContext.tsx   React context: connect/disconnect/auto-push/pull
   components/               shared UI (nav layout)
   pages/                    one file per route
 ```
