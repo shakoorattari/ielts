@@ -1,12 +1,19 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import type { ReactNode } from 'react';
-import type { Grade, ItemProgress, MasteryStatus, ProgressState } from '../types';
+import type { AttemptRecord, Grade, ItemProgress, MasteryStatus, PracticeMode, ProgressState } from '../types';
 import { ALL_ITEMS, THEMES } from './collocations';
 import { freshProgress, isDue, review, reviewFromResult } from './srs';
 import { emptyState, exportProgressJSON, importProgressJSON, loadProgress, saveProgress } from './storage';
+import { clearAllSessions } from './useSessionStorage';
 
 function todayKey(d = new Date()): string {
   return d.toISOString().slice(0, 10);
+}
+
+const MAX_ATTEMPTS_LOGGED = 300;
+
+function makeAttemptId(): string {
+  return `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 }
 
 interface ProgressContextValue {
@@ -16,6 +23,7 @@ interface ProgressContextValue {
   recordResult: (id: string, correct: boolean) => void;
   setWritingNote: (topicKey: string, text: string) => void;
   toggleWritingCheck: (itemId: string) => void;
+  logAttempt: (record: { mode: PracticeMode; themeId: number | null; total: number; correct: number }) => void;
   resetProgress: () => void;
   exportJSON: () => string;
   importJSON: (json: string) => void;
@@ -104,7 +112,21 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     [recordActivity],
   );
 
-  const resetProgress = useCallback(() => setState(emptyState()), []);
+  const logAttempt = useCallback(
+    (record: { mode: PracticeMode; themeId: number | null; total: number; correct: number }) => {
+      setState((prev) => {
+        const entry: AttemptRecord = { ...record, id: makeAttemptId(), finishedAt: Date.now() };
+        const attempts = [...prev.attempts, entry].slice(-MAX_ATTEMPTS_LOGGED);
+        return { ...prev, attempts };
+      });
+    },
+    [],
+  );
+
+  const resetProgress = useCallback(() => {
+    clearAllSessions();
+    setState(emptyState());
+  }, []);
 
   const exportJSON = useCallback(() => exportProgressJSON(state), [state]);
 
@@ -164,6 +186,7 @@ export function ProgressProvider({ children }: { children: ReactNode }) {
     recordResult,
     setWritingNote,
     toggleWritingCheck,
+    logAttempt,
     resetProgress,
     exportJSON,
     importJSON,

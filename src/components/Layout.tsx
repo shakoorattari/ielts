@@ -8,6 +8,7 @@ const NAV_ITEMS = [
   { to: '/fill-blank', label: 'Fill the Blank' },
   { to: '/quiz', label: 'Quick Quiz' },
   { to: '/writing', label: 'Writing' },
+  { to: '/history', label: 'History' },
 ];
 
 export function Layout() {

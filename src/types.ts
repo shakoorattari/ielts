@@ -45,10 +45,23 @@ export interface ItemProgress {
 
 export type Grade = 'again' | 'hard' | 'good' | 'easy';
 
+export type PracticeMode = 'flashcards' | 'fill-blank' | 'quiz';
+
+/** One completed practice round, logged for the attempts history. */
+export interface AttemptRecord {
+  id: string;
+  mode: PracticeMode;
+  themeId: number | null;
+  total: number;
+  correct: number;
+  finishedAt: number;
+}
+
 export interface ProgressState {
   items: Record<string, ItemProgress>;
   history: string[];
   writingNotes: Record<string, string>;
   writingChecks: Record<string, boolean>;
   totalReviews: number;
+  attempts: AttemptRecord[];
 }

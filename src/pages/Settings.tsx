@@ -38,8 +38,8 @@ export function Settings() {
       <section className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
         <h2 className="font-semibold">Your data</h2>
         <p className="mt-1 text-sm text-ink-soft">
-          {statusCounts.mastered} of {ALL_ITEMS.length} mastered · {state.totalReviews} reviews logged. Everything is
-          stored locally in this browser.
+          {statusCounts.mastered} of {ALL_ITEMS.length} mastered · {state.totalReviews} reviews logged ·{' '}
+          {state.attempts.length} practice rounds completed. Everything is stored locally in this browser.
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <button

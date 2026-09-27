@@ -18,9 +18,15 @@ no backend, no accounts. All progress is stored in your browser's `localStorage`
 - **Quick Quiz** — multiple-choice meaning quiz, four options per question.
 - **Writing Practice** — pick a topic, get a mini writing prompt, draft your own sentences
   (autosaved), and tick off each collocation as you use it correctly.
+- **History** — every completed Flashcards/Fill the Blank/Quick Quiz round is logged with its
+  score, theme, and timestamp; the Dashboard also surfaces the most recent attempts.
 
 Every practice mode feeds the same per-item mastery record, so progress made in any mode
 moves that collocation through the same new → learning → review → mastered pipeline.
+
+In-progress rounds (current queue/question, index, running score) are persisted to
+`localStorage` as you go, so refreshing the page mid-session resumes exactly where you left
+off instead of starting over.
 
 ## Data
 
@@ -54,9 +60,11 @@ src/
   lib/
     collocations.ts        data helpers (flatten, search, distractors, blanking)
     srs.ts                 SM-2 style spaced-repetition scheduler
-    match.ts                typo-tolerant answer matching for Fill the Blank
-    storage.ts              localStorage read/write + import/export
-    progressContext.tsx     React context exposing progress state + actions
+    match.ts               typo-tolerant answer matching for Fill the Blank
+    storage.ts             localStorage read/write + import/export (mastery + attempts)
+    useSessionStorage.ts   generic localStorage-backed useState for in-progress rounds
+    attempts.ts            shared formatting helpers for the attempts history
+    progressContext.tsx    React context exposing progress state + actions
   components/               shared UI (nav layout)
   pages/                    one file per route
 ```

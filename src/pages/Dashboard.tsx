@@ -1,6 +1,7 @@
 import { Link } from 'react-router-dom';
 import { useProgress } from '../lib/progressContext';
 import { ALL_ITEMS } from '../lib/collocations';
+import { MODE_META, formatWhen, scoreTone, themeName } from '../lib/attempts';
 
 function StatCard({ label, value, sub, tone }: { label: string; value: string | number; sub?: string; tone: string }) {
   return (
@@ -13,8 +14,9 @@ function StatCard({ label, value, sub, tone }: { label: string; value: string | 
 }
 
 export function Dashboard() {
-  const { statusCounts, overallPct, themeMastery, dueCount, streak, studiedToday } = useProgress();
+  const { state, statusCounts, overallPct, themeMastery, dueCount, streak, studiedToday } = useProgress();
   const total = ALL_ITEMS.length;
+  const recentAttempts = [...state.attempts].sort((a, b) => b.finishedAt - a.finishedAt).slice(0, 4);
 
   return (
     <div className="flex flex-col gap-8 animate-pop">
@@ -72,6 +74,40 @@ export function Dashboard() {
           <p className="mt-1 text-sm text-ink-soft">Use collocations in your own sentences</p>
         </Link>
       </section>
+
+      {recentAttempts.length > 0 && (
+        <section>
+          <div className="mb-3 flex items-baseline justify-between">
+            <h2 className="text-lg font-semibold">Recent activity</h2>
+            <Link to="/history" className="text-sm font-medium text-brand-500 hover:underline">
+              View all →
+            </Link>
+          </div>
+          <div className="flex flex-col gap-2">
+            {recentAttempts.map((a) => {
+              const meta = MODE_META[a.mode];
+              const pct = a.total > 0 ? Math.round((a.correct / a.total) * 100) : 0;
+              return (
+                <div
+                  key={a.id}
+                  className="flex items-center gap-4 rounded-xl border border-line bg-surface p-3 shadow-sm"
+                >
+                  <span className="text-lg">{meta.icon}</span>
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-medium">{meta.label}</p>
+                    <p className="truncate text-xs text-ink-soft">
+                      {themeName(a.themeId)} · {formatWhen(a.finishedAt)}
+                    </p>
+                  </div>
+                  <span className={`shrink-0 rounded-full px-2.5 py-1 text-xs font-semibold ${scoreTone(pct)}`}>
+                    {a.correct}/{a.total}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </section>
+      )}
 
       <section>
         <div className="mb-3 flex items-baseline justify-between">

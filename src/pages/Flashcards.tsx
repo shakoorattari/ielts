@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { ALL_ITEMS, ITEM_BY_ID, THEMES, shuffle } from '../lib/collocations';
 import { useProgress } from '../lib/progressContext';
+import { useSessionStorage } from '../lib/useSessionStorage';
 import { isDue } from '../lib/srs';
-import type { Grade } from '../types';
+import type { Grade, ItemProgress } from '../types';
 
 const SESSION_SIZE = 15;
 
-function buildQueue(themeId: number | null, getProgress: (id: string) => import('../types').ItemProgress): string[] {
+function buildQueue(themeId: number | null, getProgress: (id: string) => ItemProgress): string[] {
   const scoped = themeId ? ALL_ITEMS.filter((i) => i.themeId === themeId) : ALL_ITEMS;
   const now = Date.now();
   const due: string[] = [];
@@ -26,36 +27,67 @@ function buildQueue(themeId: number | null, getProgress: (id: string) => import(
   return queue;
 }
 
+interface FlashcardsSession {
+  themeId: number | null;
+  queue: string[];
+  index: number;
+  sessionDone: number;
+  sessionCorrect: number;
+  attemptLogged: boolean;
+}
+
 export function Flashcards() {
   const [params, setParams] = useSearchParams();
   const themeId = params.get('theme') ? Number(params.get('theme')) : null;
-  const { getProgress, gradeItem, dueCount } = useProgress();
+  const { getProgress, gradeItem, dueCount, logAttempt } = useProgress();
 
-  const [queue, setQueue] = useState<string[]>(() => buildQueue(themeId, getProgress));
-  const [index, setIndex] = useState(0);
+  function createSession(theme: number | null): FlashcardsSession {
+    return {
+      themeId: theme,
+      queue: buildQueue(theme, getProgress),
+      index: 0,
+      sessionDone: 0,
+      sessionCorrect: 0,
+      attemptLogged: false,
+    };
+  }
+
+  const [session, setSession] = useSessionStorage<FlashcardsSession>('flashcards', () => createSession(themeId));
   const [flipped, setFlipped] = useState(false);
-  const [sessionDone, setSessionDone] = useState(0);
 
   function restart(nextTheme: number | null) {
     setParams(nextTheme ? { theme: String(nextTheme) } : {});
-    setQueue(buildQueue(nextTheme, getProgress));
-    setIndex(0);
+    setSession(createSession(nextTheme));
     setFlipped(false);
-    setSessionDone(0);
   }
 
-  const currentId = queue[index];
+  const currentId = session.queue[session.index];
   const item = currentId ? ITEM_BY_ID[currentId] : null;
+  const finished = !item;
 
   function grade(g: Grade) {
     if (!currentId) return;
     gradeItem(currentId, g);
-    setSessionDone((n) => n + 1);
+    setSession((s) => ({
+      ...s,
+      index: s.index + 1,
+      sessionDone: s.sessionDone + 1,
+      sessionCorrect: s.sessionCorrect + (g === 'again' ? 0 : 1),
+    }));
     setFlipped(false);
-    setIndex((i) => i + 1);
   }
 
-  const finished = !item;
+  useEffect(() => {
+    if (finished && !session.attemptLogged && session.sessionDone > 0) {
+      logAttempt({
+        mode: 'flashcards',
+        themeId: session.themeId,
+        total: session.sessionDone,
+        correct: session.sessionCorrect,
+      });
+      setSession((s) => ({ ...s, attemptLogged: true }));
+    }
+  }, [finished, session.attemptLogged, session.sessionDone, session.sessionCorrect, session.themeId, logAttempt, setSession]);
 
   return (
     <div className="mx-auto flex max-w-xl flex-col items-center gap-6 animate-pop">
@@ -77,7 +109,7 @@ export function Flashcards() {
 
       {!finished && (
         <p className="text-sm text-ink-soft">
-          Card {index + 1} of {queue.length} · {dueCount} total due
+          Card {session.index + 1} of {session.queue.length} · {dueCount} total due
         </p>
       )}
 
@@ -85,7 +117,9 @@ export function Flashcards() {
         <div className="flex flex-col items-center gap-4 rounded-2xl border border-line bg-surface p-10 text-center shadow-sm">
           <p className="text-3xl">🎉</p>
           <p className="text-lg font-semibold">
-            {sessionDone > 0 ? `Session complete — ${sessionDone} reviewed!` : 'Nothing to review right now.'}
+            {session.sessionDone > 0
+              ? `Session complete — ${session.sessionDone} reviewed!`
+              : 'Nothing to review right now.'}
           </p>
           <p className="text-sm text-ink-soft">
             {dueCount > 0
