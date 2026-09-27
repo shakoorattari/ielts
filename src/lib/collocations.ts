@@ -59,15 +59,32 @@ export function searchItems(query: string, limit = 40): Item[] {
 }
 
 /** Build a sentence with the collocation's usage phrase blanked out. */
-export function blankExample(item: Item): { before: string; after: string } | null {
+export interface BlankResult {
+  before: string;
+  after: string;
+  /** The exact substring pulled from the example (keeps its original casing). */
+  answer: string;
+}
+
+/**
+ * Blanks out the collocation's core `term` inside its example sentence, since
+ * that's the fixed noun/adjective phrase — the `usage` phrase often includes a
+ * verb that's conjugated differently in the example ("to reduce" vs "Reducing"),
+ * which made it both harder to type and far less likely to match at all.
+ * Falls back to the full `usage` phrase for the rare item where only that matches.
+ */
+export function blankExample(item: Item): BlankResult | null {
   const example = item.example;
-  const needle = item.usage;
-  const idx = example.toLowerCase().indexOf(needle.toLowerCase());
-  if (idx === -1) return null;
-  return {
-    before: example.slice(0, idx),
-    after: example.slice(idx + needle.length),
+  const find = (needle: string): BlankResult | null => {
+    const idx = example.toLowerCase().indexOf(needle.toLowerCase());
+    if (idx === -1) return null;
+    return {
+      before: example.slice(0, idx),
+      after: example.slice(idx + needle.length),
+      answer: example.slice(idx, idx + needle.length),
+    };
   };
+  return find(item.term) ?? find(item.usage);
 }
 
 /** Pick n random distractor meanings, preferring items outside the target's topic. */

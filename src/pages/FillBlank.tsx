@@ -13,6 +13,14 @@ function buildRound(themeId: number | null): Item[] {
   return shuffle(eligible).slice(0, ROUND_SIZE);
 }
 
+/** Reveals whole words left-to-right; words not yet revealed show as underscores matching their length. */
+function hintDisplay(answer: string, wordsRevealed: number): string {
+  return answer
+    .split(' ')
+    .map((word, i) => (i < wordsRevealed ? word : '_'.repeat(word.length)))
+    .join(' ');
+}
+
 type Phase = 'answering' | 'checked';
 
 export function FillBlank() {
@@ -26,10 +34,11 @@ export function FillBlank() {
   const [phase, setPhase] = useState<Phase>('answering');
   const [wasCorrect, setWasCorrect] = useState(false);
   const [score, setScore] = useState({ correct: 0, total: 0 });
-  const [hintLevel, setHintLevel] = useState(0);
+  const [hintWords, setHintWords] = useState(0);
 
   const item = round[index];
   const blank = useMemo(() => (item ? blankExample(item) : null), [item]);
+  const answerWordCount = blank ? blank.answer.split(' ').length : 0;
 
   function restart(nextTheme: number | null) {
     setParams(nextTheme ? { theme: String(nextTheme) } : {});
@@ -38,27 +47,26 @@ export function FillBlank() {
     setAnswer('');
     setPhase('answering');
     setScore({ correct: 0, total: 0 });
-    setHintLevel(0);
+    setHintWords(0);
   }
 
   function submit() {
-    if (!item || !answer.trim()) return;
-    const lenientCorrect = isCloseEnough(answer, item.usage);
+    if (!item || !blank || !answer.trim()) return;
+    const lenientCorrect = isCloseEnough(answer, blank.answer);
     setWasCorrect(lenientCorrect);
-    recordResult(item.id, lenientCorrect && hintLevel === 0);
+    recordResult(item.id, lenientCorrect && hintWords === 0);
     setScore((s) => ({ correct: s.correct + (lenientCorrect ? 1 : 0), total: s.total + 1 }));
     setPhase('checked');
   }
 
   function next() {
     setAnswer('');
-    setHintLevel(0);
+    setHintWords(0);
     setPhase('answering');
     setIndex((i) => i + 1);
   }
 
   const finished = !item;
-  const hint = item ? item.usage.slice(0, hintLevel) : '';
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6 animate-pop">
@@ -105,7 +113,7 @@ export function FillBlank() {
           <p className="mt-3 text-lg leading-relaxed">
             {blank.before}
             <span className="mx-1 inline-block min-w-32 border-b-2 border-dashed border-brand-500 px-1 text-center font-semibold text-brand-600">
-              {phase === 'checked' ? item.usage : answer || '＿＿＿＿＿＿'}
+              {phase === 'checked' ? blank.answer : answer || '＿＿＿＿＿＿'}
             </span>
             {blank.after}
           </p>
@@ -118,24 +126,26 @@ export function FillBlank() {
                 value={answer}
                 onChange={(e) => setAnswer(e.target.value)}
                 onKeyDown={(e) => e.key === 'Enter' && submit()}
-                placeholder="Type the missing collocation…"
+                placeholder="Type the missing word or phrase…"
                 className="rounded-lg border border-line px-4 py-2.5 text-sm outline-none focus:border-brand-500"
               />
-              {hintLevel > 0 && (
+              {hintWords > 0 && (
                 <p className="text-xs text-ink-soft">
-                  Hint: <span className="font-mono">{hint}…</span>
+                  Hint: <span className="font-mono tracking-wide">{hintDisplay(blank.answer, hintWords)}</span>
                 </p>
               )}
               <div className="flex gap-2">
                 <button
                   onClick={submit}
-                  className="flex-1 rounded-lg bg-brand-500 py-2.5 text-sm font-semibold text-white hover:bg-brand-600"
+                  disabled={!answer.trim()}
+                  className="flex-1 rounded-lg bg-brand-500 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Check
                 </button>
                 <button
-                  onClick={() => setHintLevel((h) => Math.min(item.usage.length, h + 3))}
-                  className="rounded-lg border border-line px-4 text-sm font-semibold hover:bg-brand-50"
+                  onClick={() => setHintWords((h) => Math.min(answerWordCount, h + 1))}
+                  disabled={hintWords >= answerWordCount}
+                  className="rounded-lg border border-line px-4 text-sm font-semibold hover:bg-brand-50 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Hint
                 </button>
@@ -148,8 +158,8 @@ export function FillBlank() {
                   wasCorrect ? 'bg-mint-100 text-mint-500' : 'bg-rose-100 text-rose-500'
                 }`}
               >
-                {wasCorrect ? 'Correct!' : `Not quite — correct answer: "${item.usage}"`}
-                {hintLevel > 0 && wasCorrect && ' (hint used — marked for more practice)'}
+                {wasCorrect ? 'Correct!' : `Not quite — correct answer: "${blank.answer}"`}
+                {hintWords > 0 && wasCorrect && ' (hint used — marked for more practice)'}
               </div>
               <p className="text-sm italic text-ink-soft">“{item.example}”</p>
               <button

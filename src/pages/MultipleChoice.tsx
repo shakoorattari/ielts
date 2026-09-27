@@ -27,7 +27,8 @@ export function MultipleChoice() {
 
   const [round, setRound] = useState<Question[]>(() => buildRound(themeId));
   const [index, setIndex] = useState(0);
-  const [selected, setSelected] = useState<string | null>(null);
+  const [picked, setPicked] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState<string | null>(null);
   const [score, setScore] = useState(0);
 
   const q = round[index];
@@ -37,20 +38,32 @@ export function MultipleChoice() {
     setParams(nextTheme ? { theme: String(nextTheme) } : {});
     setRound(buildRound(nextTheme));
     setIndex(0);
-    setSelected(null);
+    setPicked(null);
+    setSubmitted(null);
     setScore(0);
   }
 
-  function choose(option: string) {
-    if (selected) return;
-    setSelected(option);
+  function confirm(option: string) {
+    if (submitted) return;
+    setSubmitted(option);
     const correct = option === q.item.meaning;
     if (correct) setScore((s) => s + 1);
     recordResult(q.item.id, correct);
   }
 
+  function selectOption(option: string) {
+    if (submitted) return;
+    setPicked(option);
+  }
+
+  function submitPicked() {
+    if (!picked || submitted) return;
+    confirm(picked);
+  }
+
   function next() {
-    setSelected(null);
+    setPicked(null);
+    setSubmitted(null);
     setIndex((i) => i + 1);
   }
 
@@ -99,23 +112,35 @@ export function MultipleChoice() {
           <p className="mt-3 text-lg font-semibold">
             What does <span className="text-brand-600">“{q.item.usage}”</span> mean?
           </p>
+          {!submitted && (
+            <p className="mt-1 text-xs text-ink-soft">
+              Select an answer, then press Submit — or double-click an option to answer instantly.
+            </p>
+          )}
 
           <div className="mt-5 grid gap-2">
             {q.options.map((option) => {
               const isCorrect = option === q.item.meaning;
-              const isSelected = option === selected;
-              const showState = selected !== null;
+              const isPicked = option === picked;
+              const isSubmittedChoice = option === submitted;
+              const showResult = submitted !== null;
               return (
                 <button
                   key={option}
-                  onClick={() => choose(option)}
-                  disabled={showState}
-                  className={`rounded-lg border px-4 py-3 text-left text-sm transition ${
-                    showState && isCorrect
+                  onClick={() => selectOption(option)}
+                  onDoubleClick={() => {
+                    setPicked(option);
+                    confirm(option);
+                  }}
+                  disabled={showResult}
+                  className={`rounded-lg border-2 px-4 py-3 text-left text-sm transition ${
+                    showResult && isCorrect
                       ? 'border-mint-500 bg-mint-100 text-mint-500'
-                      : showState && isSelected
+                      : showResult && isSubmittedChoice
                         ? 'border-rose-500 bg-rose-100 text-rose-500'
-                        : 'border-line hover:border-brand-300 hover:bg-brand-50'
+                        : !showResult && isPicked
+                          ? 'border-brand-500 bg-brand-50'
+                          : 'border-line hover:border-brand-300 hover:bg-brand-50'
                   }`}
                 >
                   {option}
@@ -124,7 +149,15 @@ export function MultipleChoice() {
             })}
           </div>
 
-          {selected && (
+          {!submitted ? (
+            <button
+              onClick={submitPicked}
+              disabled={!picked}
+              className="mt-5 w-full rounded-lg bg-brand-500 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              Submit answer
+            </button>
+          ) : (
             <div className="mt-5 flex flex-col gap-3">
               <p className="text-sm italic text-ink-soft">“{q.item.example}”</p>
               <button
