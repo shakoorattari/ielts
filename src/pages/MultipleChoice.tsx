@@ -110,8 +110,9 @@ export function MultipleChoice() {
             {q.item.themeTitle} · {q.item.topicTitle}
           </p>
           <p className="mt-3 text-lg font-semibold">
-            What does <span className="text-brand-600">“{q.item.usage}”</span> mean?
+            What does <span className="text-brand-600">“{q.item.term}”</span> mean?
           </p>
+          <p className="mt-1 text-sm text-ink-soft">e.g. “{q.item.usage}”</p>
           {!submitted && (
             <p className="mt-1 text-xs text-ink-soft">
               Select an answer, then press Submit — or double-click an option to answer instantly.
