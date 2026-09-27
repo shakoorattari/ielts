@@ -21,8 +21,11 @@ export function Layout() {
             <span className="grid h-8 w-8 place-items-center rounded-lg bg-brand-500 text-sm font-bold text-white">
               IE
             </span>
-            <span className="hidden text-sm font-semibold tracking-tight sm:inline">
-              1000 Collocations
+            <span className="hidden flex-col leading-tight sm:flex">
+              <span className="text-sm font-semibold tracking-tight">IELTS Prep</span>
+              <span className="text-[10px] font-semibold uppercase tracking-wide text-brand-500">
+                Collocations
+              </span>
             </span>
           </NavLink>
 
