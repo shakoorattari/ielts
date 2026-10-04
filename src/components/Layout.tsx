@@ -5,6 +5,8 @@ import { useCloudSync } from '../lib/cloudSyncContext';
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true },
   { to: '/browse', label: 'Browse' },
+  { to: '/essays', label: 'Essays' },
+  { to: '/phrases', label: 'Phrases' },
   { to: '/flashcards', label: 'Flashcards' },
   { to: '/fill-blank', label: 'Fill the Blank' },
   { to: '/quiz', label: 'Quick Quiz' },
@@ -27,7 +29,7 @@ export function Layout() {
             <span className="hidden flex-col leading-tight sm:flex">
               <span className="text-sm font-semibold tracking-tight">IELTS Prep</span>
               <span className="text-[10px] font-semibold uppercase tracking-wide text-brand-500">
-                Collocations
+                Collocations &amp; Essays
               </span>
             </span>
           </NavLink>

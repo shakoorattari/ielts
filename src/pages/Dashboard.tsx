@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import { useProgress } from '../lib/progressContext';
 import { ALL_ITEMS } from '../lib/collocations';
 import { MODE_META, formatWhen, scoreTone, themeName } from '../lib/attempts';
+import { TOTAL_ESSAYS, nextUnread, useEssayState } from '../lib/essayState';
 
 function StatCard({ label, value, sub, tone }: { label: string; value: string | number; sub?: string; tone: string }) {
   return (
@@ -16,6 +17,9 @@ function StatCard({ label, value, sub, tone }: { label: string; value: string | 
 export function Dashboard() {
   const { state, statusCounts, overallPct, themeMastery, dueCount, streak, studiedToday } = useProgress();
   const total = ALL_ITEMS.length;
+  const essays = useEssayState();
+  const essaysRead = essays.state.read.length;
+  const upNext = nextUnread(essays.state.read);
   const recentAttempts = [...state.attempts].sort((a, b) => b.finishedAt - a.finishedAt).slice(0, 4);
 
   return (
@@ -72,6 +76,36 @@ export function Dashboard() {
           <p className="text-2xl">📝</p>
           <p className="mt-2 font-semibold">Writing Practice</p>
           <p className="mt-1 text-sm text-ink-soft">Use collocations in your own sentences</p>
+        </Link>
+      </section>
+
+      <section>
+        <Link
+          to={upNext ? `/essays/${upNext}` : '/essays'}
+          className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-5 shadow-sm transition hover:border-brand-300 hover:shadow-md sm:flex-row sm:items-center"
+        >
+          <div className="flex-1">
+            <p className="text-2xl">📖</p>
+            <p className="mt-2 font-semibold">Model essays</p>
+            <p className="mt-1 text-sm text-ink-soft">
+              {upNext
+                ? essaysRead > 0
+                  ? `${essaysRead} of ${TOTAL_ESSAYS} read — continue with Essay ${upNext}`
+                  : `${TOTAL_ESSAYS} Task 2 essays with key phrases and meanings — start with Essay 1`
+                : `All ${TOTAL_ESSAYS} essays read. Revisit any of them.`}
+            </p>
+          </div>
+          <div className="sm:w-56">
+            <div className="h-2 overflow-hidden rounded-full bg-brand-50">
+              <div
+                className="h-full rounded-full bg-brand-500 transition-all"
+                style={{ width: `${(essaysRead / TOTAL_ESSAYS) * 100}%` }}
+              />
+            </div>
+            <p className="mt-1 text-right text-xs text-ink-soft">
+              {essaysRead}/{TOTAL_ESSAYS}
+            </p>
+          </div>
         </Link>
       </section>
 

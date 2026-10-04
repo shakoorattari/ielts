@@ -24,6 +24,15 @@ optional opt-in sync to keep it consistent across devices (see below).
 - **History** — every completed Flashcards/Fill the Blank/Quick Quiz round is logged with its
   score, theme, and timestamp; the Dashboard also surfaces the most recent attempts.
 
+- **Model essays** — a library of 202 IELTS Task 2 essays, filterable by essay type
+  (Agree/Disagree, Discuss Both Views, Advantages & Disadvantages, Cause/Effect/Solution,
+  Combination) and by topic, with full-text search and a "random essay" button. The reader
+  highlights key phrases, lists them in a *phrase → meaning / synonyms* table, adjusts text size,
+  tracks read / saved essays, steps through essays with ‹ › (or the arrow keys), and has a
+  250-word answer box so you can write your own response to each question.
+- **Phrase bank** — every highlighted key phrase from the essays, A–Z and searchable, with a short
+  meaning and links to each essay it appears in.
+
 Every practice mode feeds the same per-item mastery record, so progress made in any mode
 moves that collocation through the same new → learning → review → mastered pipeline.
 
@@ -59,6 +68,12 @@ either side.
 `src/data/collocations.json` holds all 1000 entries, parsed once from the source
 `1000_collocations.docx`. Each entry has a `term`, a natural `usage` phrase (e.g. "to
 reduce class size"), a plain-English `meaning`, and an example sentence.
+
+`src/data/essays.json` holds the 202 essays (question, body with `**highlighted**` phrases, type,
+topics, and the key-phrase table). It was parsed from the source PDF; the phrase meanings are
+hand-written short glosses. Essay reading progress, saved essays and written answers are kept in
+`localStorage` (`ielts-essays:v1`) and are not part of the Gist sync. The essay pages are
+code-split, so the ~0.5 MB of essay text only loads when you open them.
 
 ## Getting started
 
@@ -99,6 +114,8 @@ src/
     gistSync.ts            GitHub Gist API calls for cross-device sync
     mergeProgress.ts        non-destructive merge of two progress snapshots
     cloudSyncContext.tsx   React context: connect/disconnect/auto-push/pull
+    essays.ts              essay data helpers: filters, search, phrase bank
+    essayState.ts          localStorage store for read / saved / drafts / reader settings
   components/               shared UI (nav layout)
   pages/                    one file per route
 ```
