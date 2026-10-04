@@ -1,6 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom';
 import { useProgress } from '../lib/progressContext';
 import { useCloudSync } from '../lib/cloudSyncContext';
+import { ThemeMenu } from './ThemeMenu';
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', end: true },
@@ -76,6 +77,7 @@ export function Layout() {
                 {sync.status === 'syncing' ? '↻' : sync.status === 'error' ? '⚠' : '☁'}
               </NavLink>
             )}
+            <ThemeMenu />
             <NavLink
               to="/settings"
               className="grid h-8 w-8 place-items-center rounded-full text-ink-soft hover:bg-brand-50 hover:text-ink"

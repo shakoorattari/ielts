@@ -3,6 +3,7 @@ import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ESSAYS, TOPICS, TYPES, matchesQuery, questionText, readMinutes, topicLabel, typeLabel } from '../lib/essays';
 import { useEssayState } from '../lib/essayState';
 import { SourceCredit } from '../components/SourceCredit';
+import { PDF_LABEL, PDF_URL } from '../lib/pdf';
 
 type StatusFilter = 'all' | 'unread' | 'read' | 'saved';
 
@@ -61,7 +62,15 @@ export function Essays() {
             {state.saved.length > 0 ? ` · ${state.saved.length} saved` : ''}.
           </p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <a
+            href={PDF_URL}
+            download
+            className="rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium shadow-sm hover:border-brand-300"
+            title="Phone-sized PDF of all 202 essays with key-phrase tables"
+          >
+            ⬇ Download PDF <span className="text-ink-soft">({PDF_LABEL})</span>
+          </a>
           <Link
             to="/phrases"
             className="rounded-full border border-line bg-surface px-4 py-2 text-sm font-medium shadow-sm hover:border-brand-300"

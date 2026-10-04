@@ -82,3 +82,103 @@ body {
 .animate-pop {
   animation: pop-in 0.22s ease-out;
 }
+
+/* ---- Selectable themes -------------------------------------------------
+   "Auto" (no data-theme) follows the system light/dark setting above. The
+   rules below pin an explicit theme via <html data-theme="…">. */
+:root[data-theme='light'] {
+  color-scheme: light;
+  --color-canvas: #f7f6f3;
+  --color-surface: #ffffff;
+  --color-ink: #1b1a22;
+  --color-ink-soft: #625f6e;
+  --color-line: #e7e4de;
+  --color-brand-50: #f2f0fb;
+  --color-brand-100: #e2ddf6;
+  --color-brand-300: #b6a8e8;
+  --color-brand-500: #6d4fd6;
+  --color-brand-600: #5b3ec2;
+  --color-brand-700: #4a319f;
+  --color-mint-100: #d9f3ea;
+  --color-amber-100: #fbebd2;
+  --color-rose-100: #fbe0e3;
+}
+
+/* Warm paper tones, easy on the eyes for long reading */
+:root[data-theme='sepia'] {
+  color-scheme: light;
+  --color-canvas: #f1e7d0;
+  --color-surface: #f9f1de;
+  --color-ink: #3b2f20;
+  --color-ink-soft: #77664f;
+  --color-line: #ddcfb0;
+  --color-brand-50: #efe2c4;
+  --color-brand-100: #e5d3a9;
+  --color-brand-300: #c99c6a;
+  --color-brand-500: #9a5b2e;
+  --color-brand-600: #834c25;
+  --color-brand-700: #6b3d1d;
+  --color-mint-100: #dcead2;
+  --color-amber-100: #f3dfb4;
+  --color-rose-100: #f2d6cc;
+}
+
+/* Soft sage green, low glare */
+:root[data-theme='mint'] {
+  color-scheme: light;
+  --color-canvas: #e6f0e8;
+  --color-surface: #f3f9f4;
+  --color-ink: #1d2b22;
+  --color-ink-soft: #55695d;
+  --color-line: #cfdfd3;
+  --color-brand-50: #dcebdf;
+  --color-brand-100: #c9dfce;
+  --color-brand-300: #7fb592;
+  --color-brand-500: #2f7d56;
+  --color-brand-600: #266a47;
+  --color-brand-700: #1d5538;
+  --color-mint-100: #cdebd8;
+  --color-amber-100: #f1e6c6;
+  --color-rose-100: #f4dcdc;
+}
+
+:root[data-theme='dark'] {
+  color-scheme: dark;
+  --color-canvas: #131218;
+  --color-surface: #1c1b24;
+  --color-ink: #f1eff8;
+  --color-ink-soft: #a29dae;
+  --color-line: #322f3d;
+  --color-brand-50: #241f38;
+  --color-brand-100: #2c2645;
+  --color-brand-300: #7d67cc;
+  --color-brand-500: #9683e8;
+  --color-brand-600: #a996ef;
+  --color-brand-700: #c1b3f5;
+  --color-mint-100: #113228;
+  --color-amber-100: #332510;
+  --color-rose-100: #331419;
+}
+
+/* True black for OLED screens and night reading */
+:root[data-theme='black'] {
+  color-scheme: dark;
+  --color-canvas: #000000;
+  --color-surface: #0c0c0e;
+  --color-ink: #ececf1;
+  --color-ink-soft: #9a98a4;
+  --color-line: #25252b;
+  --color-brand-50: #17142a;
+  --color-brand-100: #211b3d;
+  --color-brand-300: #7d67cc;
+  --color-brand-500: #9a88ee;
+  --color-brand-600: #ac9cf2;
+  --color-brand-700: #c4b8f6;
+  --color-mint-100: #0b2a21;
+  --color-amber-100: #2a1e0b;
+  --color-rose-100: #2b1015;
+}
+
+body {
+  transition: background-color 0.2s, color 0.2s;
+}

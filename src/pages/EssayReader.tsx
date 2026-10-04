@@ -1,10 +1,13 @@
-import { Fragment, useEffect } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ESSAYS, ESSAY_BY_N, readMinutes, topicLabel, typeLabel } from '../lib/essays';
 import { useEssayState } from '../lib/essayState';
 import { SourceCredit } from '../components/SourceCredit';
+import { ThemePicker } from '../components/ThemePicker';
+import { PDF_URL } from '../lib/pdf';
 
 const TARGET_WORDS = 250;
+const SPACING = { compact: 1.5, normal: 1.75, relaxed: 2.05 } as const;
 
 function wordCount(text: string): number {
   const t = text.trim();
@@ -37,6 +40,7 @@ export function EssayReader() {
   const n = Number(param);
   const essay = ESSAY_BY_N[n];
   const es = useEssayState();
+  const [showDisplay, setShowDisplay] = useState(false);
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
@@ -153,6 +157,15 @@ export function EssayReader() {
           </button>
         )}
         <button
+          onClick={() => setShowDisplay((v) => !v)}
+          aria-expanded={showDisplay}
+          className={`rounded-full border px-3 py-1.5 font-medium ${
+            showDisplay ? 'border-brand-500 bg-brand-50 text-brand-600' : 'border-line bg-surface text-ink-soft'
+          }`}
+        >
+          🎨 Display
+        </button>
+        <button
           onClick={() => es.toggleSaved(n)}
           className={`rounded-full border px-3 py-1.5 font-medium ${
             saved ? 'border-amber-500 bg-amber-100 text-amber-500' : 'border-line bg-surface text-ink-soft'
@@ -170,9 +183,53 @@ export function EssayReader() {
         </button>
       </div>
 
+      {showDisplay && (
+        <div className="flex flex-col gap-4 rounded-2xl border border-line bg-surface p-4 shadow-sm animate-pop">
+          <div>
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-soft">Theme</p>
+            <ThemePicker />
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <Segmented
+              label="Font"
+              value={es.state.fontFamily}
+              options={[
+                { key: 'serif', label: 'Serif' },
+                { key: 'sans', label: 'Sans' },
+              ]}
+              onChange={es.setFontFamily}
+            />
+            <Segmented
+              label="Line spacing"
+              value={es.state.spacing}
+              options={[
+                { key: 'compact', label: 'Tight' },
+                { key: 'normal', label: 'Normal' },
+                { key: 'relaxed', label: 'Airy' },
+              ]}
+              onChange={es.setSpacing}
+            />
+            <div>
+              <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-soft">
+                Text size · {es.state.fontSize}px
+              </p>
+              <input
+                type="range"
+                min={14}
+                max={26}
+                value={es.state.fontSize}
+                onChange={(e) => es.setFontSize(Number(e.target.value))}
+                className="w-full accent-brand-500"
+                aria-label="Text size"
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
       <div
-        className="flex flex-col gap-5 font-serif leading-[1.75]"
-        style={{ fontSize: `${es.state.fontSize}px` }}
+        className={`flex flex-col gap-5 ${es.state.fontFamily === 'serif' ? 'font-serif' : 'font-sans'}`}
+        style={{ fontSize: `${es.state.fontSize}px`, lineHeight: SPACING[es.state.spacing] }}
       >
         {essay.body.map((p, i) => (
           <p key={i}>
@@ -258,6 +315,13 @@ export function EssayReader() {
         </button>
         <NavBtn to={n < ESSAYS.length ? `/essays/${n + 1}` : null}>Essay {n + 1} ›</NavBtn>
       </div>
+      <a
+        href={PDF_URL}
+        download
+        className="self-start text-sm font-medium text-brand-500 hover:underline"
+      >
+        ⬇ Download all 202 essays as a phone-sized PDF
+      </a>
       <SourceCredit />
     </article>
   );
@@ -269,5 +333,36 @@ function NavBtn({ to, children }: { to: string | null; children: React.ReactNode
     <Link to={to} className="rounded-full px-3 py-1.5 font-medium text-brand-500 hover:bg-brand-50">
       {children}
     </Link>
+  );
+}
+
+function Segmented<T extends string>({
+  label,
+  value,
+  options,
+  onChange,
+}: {
+  label: string;
+  value: T;
+  options: { key: T; label: string }[];
+  onChange: (v: T) => void;
+}) {
+  return (
+    <div>
+      <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-ink-soft">{label}</p>
+      <div className="flex gap-1 rounded-full bg-brand-50 p-1 text-sm">
+        {options.map((o) => (
+          <button
+            key={o.key}
+            onClick={() => onChange(o.key)}
+            className={`flex-1 rounded-full px-3 py-1 font-medium transition ${
+              value === o.key ? 'bg-brand-500 text-white' : 'text-ink-soft hover:text-ink'
+            }`}
+          >
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </div>
   );
 }

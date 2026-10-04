@@ -10,11 +10,13 @@ export interface EssayState {
   drafts: Record<string, string>;
   fontSize: number;
   highlights: boolean;
+  fontFamily: 'serif' | 'sans';
+  spacing: 'compact' | 'normal' | 'relaxed';
 }
 
 const KEY = 'ielts-essays:v1';
 
-const DEFAULT: EssayState = { read: [], saved: [], drafts: {}, fontSize: 17, highlights: true };
+const DEFAULT: EssayState = { read: [], saved: [], drafts: {}, fontSize: 17, highlights: true, fontFamily: 'serif', spacing: 'normal' };
 
 function load(): EssayState {
   try {
@@ -77,6 +79,8 @@ export function useEssayState() {
     },
     setFontSize: (fontSize: number) => set({ fontSize: Math.min(26, Math.max(14, fontSize)) }),
     setHighlights: (highlights: boolean) => set({ highlights }),
+    setFontFamily: (fontFamily: EssayState['fontFamily']) => set({ fontFamily }),
+    setSpacing: (spacing: EssayState['spacing']) => set({ spacing }),
   };
 }
 

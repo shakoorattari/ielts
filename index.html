@@ -5,6 +5,12 @@
     <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="description" content="Practice all 1000 IELTS collocations with spaced-repetition flashcards, fill-in-the-blank drills, quizzes, and writing prompts." />
+    <script>
+      try {
+        var t = localStorage.getItem('ielts-theme');
+        if (t && t !== 'auto') document.documentElement.setAttribute('data-theme', t);
+      } catch (e) {}
+    </script>
     <title>1000 IELTS Collocations — Practice App</title>
   </head>
   <body>
