@@ -100,12 +100,12 @@ export function FillBlank() {
 
   return (
     <div className="mx-auto flex max-w-2xl flex-col gap-6 animate-pop">
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <h1 className="text-2xl font-bold tracking-tight">Fill the Blank</h1>
         <select
           value={themeId ?? ''}
           onChange={(e) => restart(e.target.value ? Number(e.target.value) : null)}
-          className="rounded-lg border border-line bg-surface px-3 py-1.5 text-sm"
+          className="min-w-0 max-w-[55%] rounded-lg border border-line bg-surface px-3 py-1.5 text-sm"
         >
           <option value="">All themes</option>
           {THEMES.map((t) => (

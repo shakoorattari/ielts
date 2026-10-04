@@ -89,7 +89,7 @@ export function Essays() {
       <input
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search a topic, word or phrase… e.g. “obesity”, “remote work”"
+        placeholder="Search topic, word or phrase…"
         className="w-full rounded-xl border border-line bg-surface px-4 py-3 text-sm shadow-sm outline-none focus:border-brand-500"
       />
 

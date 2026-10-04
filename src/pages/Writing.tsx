@@ -47,7 +47,7 @@ export function Writing() {
         <select
           value={theme.id}
           onChange={(e) => selectTheme(Number(e.target.value))}
-          className="rounded-lg border border-line bg-surface px-3 py-1.5 text-sm"
+          className="min-w-0 max-w-full rounded-lg border border-line bg-surface px-3 py-1.5 text-sm"
         >
           {THEMES.map((t) => (
             <option key={t.id} value={t.id}>
@@ -58,7 +58,7 @@ export function Writing() {
         <select
           value={topic.id}
           onChange={(e) => selectTopic(Number(e.target.value))}
-          className="rounded-lg border border-line bg-surface px-3 py-1.5 text-sm"
+          className="min-w-0 max-w-full rounded-lg border border-line bg-surface px-3 py-1.5 text-sm"
         >
           {theme.topics.map((t) => (
             <option key={t.id} value={t.id}>
