@@ -15,6 +15,8 @@
   --color-brand-500: #6d4fd6;
   --color-brand-600: #5b3ec2;
   --color-brand-700: #4a319f;
+  /* Text on a brand-500 surface: white where it passes 4.5:1, the page colour on the lighter dark-theme brand */
+  --color-on-brand: #ffffff;
 
   --color-mint-500: #1c9d7c;
   --color-mint-100: #d9f3ea;
@@ -22,6 +24,11 @@
   --color-amber-100: #fbebd2;
   --color-rose-500: #d1495b;
   --color-rose-100: #fbe0e3;
+
+  /* Status colours as text (on their tint, the page or a card): 4.5:1 or better in every theme */
+  --color-amber-ink: #945c1c;
+  --color-rose-ink: #b03d4c;
+  --color-mint-ink: #15775e;
 }
 
 @media (prefers-color-scheme: dark) {
@@ -38,10 +45,14 @@
     --color-brand-500: #9683e8;
     --color-brand-600: #a996ef;
     --color-brand-700: #c1b3f5;
+    --color-on-brand: #131218;
 
     --color-mint-100: #113228;
     --color-amber-100: #332510;
     --color-rose-100: #331419;
+    --color-amber-ink: #d98829;
+    --color-rose-ink: #d76272;
+    --color-mint-ink: #33a789;
   }
 }
 
@@ -99,9 +110,13 @@ body {
   --color-brand-500: #6d4fd6;
   --color-brand-600: #5b3ec2;
   --color-brand-700: #4a319f;
+  --color-on-brand: #ffffff;
   --color-mint-100: #d9f3ea;
   --color-amber-100: #fbebd2;
   --color-rose-100: #fbe0e3;
+  --color-amber-ink: #945c1c;
+  --color-rose-ink: #b03d4c;
+  --color-mint-ink: #15775e;
 }
 
 /* Warm paper tones, easy on the eyes for long reading */
@@ -110,17 +125,21 @@ body {
   --color-canvas: #f1e7d0;
   --color-surface: #f9f1de;
   --color-ink: #3b2f20;
-  --color-ink-soft: #77664f;
+  --color-ink-soft: #665844;
   --color-line: #ddcfb0;
   --color-brand-50: #efe2c4;
   --color-brand-100: #e5d3a9;
   --color-brand-300: #c99c6a;
-  --color-brand-500: #9a5b2e;
+  --color-brand-500: #8e542a;
   --color-brand-600: #834c25;
   --color-brand-700: #6b3d1d;
+  --color-on-brand: #ffffff;
   --color-mint-100: #dcead2;
   --color-amber-100: #f3dfb4;
   --color-rose-100: #f2d6cc;
+  --color-amber-ink: #8b571a;
+  --color-rose-ink: #a33947;
+  --color-mint-ink: #147159;
 }
 
 /* Soft sage green, low glare */
@@ -129,17 +148,21 @@ body {
   --color-canvas: #e6f0e8;
   --color-surface: #f3f9f4;
   --color-ink: #1d2b22;
-  --color-ink-soft: #55695d;
+  --color-ink-soft: #4d6054;
   --color-line: #cfdfd3;
   --color-brand-50: #dcebdf;
   --color-brand-100: #c9dfce;
   --color-brand-300: #7fb592;
-  --color-brand-500: #2f7d56;
+  --color-brand-500: #2b734f;
   --color-brand-600: #266a47;
   --color-brand-700: #1d5538;
+  --color-on-brand: #ffffff;
   --color-mint-100: #cdebd8;
   --color-amber-100: #f1e6c6;
   --color-rose-100: #f4dcdc;
+  --color-amber-ink: #8f5a1b;
+  --color-rose-ink: #ab3c4b;
+  --color-mint-ink: #147159;
 }
 
 :root[data-theme='dark'] {
@@ -155,9 +178,13 @@ body {
   --color-brand-500: #9683e8;
   --color-brand-600: #a996ef;
   --color-brand-700: #c1b3f5;
+  --color-on-brand: #131218;
   --color-mint-100: #113228;
   --color-amber-100: #332510;
   --color-rose-100: #331419;
+  --color-amber-ink: #d98829;
+  --color-rose-ink: #d76272;
+  --color-mint-ink: #33a789;
 }
 
 /* True black for OLED screens and night reading */
@@ -174,9 +201,13 @@ body {
   --color-brand-500: #9a88ee;
   --color-brand-600: #ac9cf2;
   --color-brand-700: #c4b8f6;
+  --color-on-brand: #000000;
   --color-mint-100: #0b2a21;
   --color-amber-100: #2a1e0b;
   --color-rose-100: #2b1015;
+  --color-amber-ink: #d98829;
+  --color-rose-ink: #d65b6b;
+  --color-mint-ink: #219f7f;
 }
 
 body {

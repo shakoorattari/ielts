@@ -1,6 +1,6 @@
 # 1000 IELTS Collocations — Practice App
 
-**Live:** https://shakoorattari.github.io/ielts/
+**Live:** https://shakoorattari.com/ielts/
 
 A focused practice app for memorizing and actively using the **1000 IELTS collocations**
 (10 themes × 10 topics × 10 collocations each) needed for a Band 8 writing/speaking score.
@@ -94,8 +94,47 @@ hosted anywhere — GitHub Pages, Netlify, Vercel, or just opened locally.
 
 ## Deployment
 
-Every push to `main` triggers `.github/workflows/deploy.yml`, which builds the app and
-publishes `dist/` to GitHub Pages automatically — no manual deploy step.
+Every push to `main` triggers `.github/workflows/deploy.yml`, which builds the app, runs the SEO
+check and publishes `dist/` to GitHub Pages automatically — no manual deploy step. Pull requests run
+the same build and check but never deploy.
+
+The site is served at **https://shakoorattari.com/ielts/**: this repository is a GitHub Pages project
+site, and the account's user site (`shakoorattari.github.io`) owns the custom domain. The old
+`shakoorattari.github.io/ielts/` address redirects there.
+
+## SEO
+
+A single-page app with hash routes (`#/flashcards`, …) has exactly **one indexable URL**: a URL fragment
+is not a separate page to a search engine. So the work is about making that one URL as findable and
+shareable as possible, and keeping it that way.
+
+- **`index.html`** carries the title, description, canonical URL, Open Graph and Twitter tags, theme
+  colours, icons and `WebApplication` JSON-LD (author = the person on https://shakoorattari.com/;
+  free; deliberately no ratings or reviews, because there are none).
+- **A static shell inside `<div id="root">`** is the page content for anything that does not run
+  JavaScript (some crawlers, link previews, AI assistants). React's `createRoot` replaces it when the
+  app starts, so nothing flashes and nothing shifts (measured CLS 0). It must stay truthful and in
+  step with the app: counts like "1000 collocations in 10 themes and 100 topics" are checked against the
+  data when you change it.
+- **Per-screen titles** (`src/lib/documentTitle.ts`) give each screen its own `document.title`
+  (WCAG 2.4.2). When you add a route, add it to `TITLES`. `APP_TITLE` there must equal `<title>` in
+  `index.html`; the SEO check enforces it.
+- **`sitemap.xml`** is generated after every build (`npm`'s `postbuild`, `scripts/generate-sitemap.mjs`),
+  with `lastmod` from git history. There is no `robots.txt` here on purpose: crawlers only read
+  `/robots.txt` at the domain root, which belongs to the portfolio repo
+  (`shakoorattari/shakoorattari.github.io`). Its `robots.txt` points at this sitemap.
+- **`404.html`** is `noindex` and links back to the app.
+- **`npm run check:seo`** (run in CI after the build) fails the build if any of that breaks: title and
+  description length, canonical, Open Graph/Twitter parity, social image size, JSON-LD validity and
+  honesty, the static shell (one `h1`, no skipped heading levels, enough text, `noscript`, link to the
+  author), every referenced file existing, the sitemap and the 404 page.
+- Colours are checked for contrast in all six themes with the `--color-on-brand` and `--color-*-ink`
+  tokens in `src/index.css`. Use `text-on-brand` on `bg-brand-500` and `text-amber-ink` /
+  `text-rose-ink` / `text-mint-ink` for status text, not `text-white` or `text-*-500`.
+
+Essays are third-party material (see *Model essays* above); they are part of the app, not separate
+indexable pages. Do not generate a page per essay without the owner's confirmation that the
+publisher's permission covers it.
 
 ## Project structure
 
@@ -118,6 +157,10 @@ src/
     essayState.ts          localStorage store for read / saved / drafts / reader settings
   components/               shared UI (nav layout)
   pages/                    one file per route
+scripts/
+  generate-sitemap.mjs     writes dist/sitemap.xml after the build
+  check-seo.mjs            post-build SEO guard (`npm run check:seo`)
+public/                    favicon, apple-touch-icon, og-image.jpg, 404.html, the essays PDF
 ```
 
 ## Roadmap ideas

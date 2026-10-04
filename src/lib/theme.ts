@@ -12,8 +12,8 @@ export interface ThemeOption {
 export const THEMES: ThemeOption[] = [
   { key: 'auto', label: 'Auto', swatch: ['linear-gradient(135deg,#f7f6f3 50%,#131218 50%)', '#625f6e', '#6d4fd6'] },
   { key: 'light', label: 'Light', swatch: ['#f7f6f3', '#1b1a22', '#6d4fd6'] },
-  { key: 'sepia', label: 'Sepia', swatch: ['#f1e7d0', '#3b2f20', '#9a5b2e'] },
-  { key: 'mint', label: 'Mint', swatch: ['#e6f0e8', '#1d2b22', '#2f7d56'] },
+  { key: 'sepia', label: 'Sepia', swatch: ['#f1e7d0', '#3b2f20', '#8e542a'] },
+  { key: 'mint', label: 'Mint', swatch: ['#e6f0e8', '#1d2b22', '#2b734f'] },
   { key: 'dark', label: 'Dark', swatch: ['#131218', '#f1eff8', '#9683e8'] },
   { key: 'black', label: 'Black', swatch: ['#000000', '#ececf1', '#9a88ee'] },
 ];

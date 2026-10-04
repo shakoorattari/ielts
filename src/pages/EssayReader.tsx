@@ -5,6 +5,7 @@ import { useEssayState } from '../lib/essayState';
 import { SourceCredit } from '../components/SourceCredit';
 import { ThemePicker } from '../components/ThemePicker';
 import { PDF_URL } from '../lib/pdf';
+import { APP_TITLE } from '../lib/documentTitle';
 
 const TARGET_WORDS = 250;
 const SPACING = { compact: 1.5, normal: 1.75, relaxed: 2.05 } as const;
@@ -46,7 +47,7 @@ export function EssayReader() {
     window.scrollTo({ top: 0 });
     if (essay) document.title = `Essay ${essay.n} — IELTS Prep`;
     return () => {
-      document.title = '1000 IELTS Collocations — Practice App';
+      document.title = APP_TITLE;
     };
   }, [essay]);
 
@@ -168,7 +169,7 @@ export function EssayReader() {
         <button
           onClick={() => es.toggleSaved(n)}
           className={`rounded-full border px-3 py-1.5 font-medium ${
-            saved ? 'border-amber-500 bg-amber-100 text-amber-500' : 'border-line bg-surface text-ink-soft'
+            saved ? 'border-amber-500 bg-amber-100 text-amber-ink' : 'border-line bg-surface text-ink-soft'
           }`}
         >
           {saved ? '★ Saved' : '☆ Save'}
@@ -176,7 +177,7 @@ export function EssayReader() {
         <button
           onClick={() => es.toggleRead(n)}
           className={`rounded-full border px-3 py-1.5 font-medium ${
-            read ? 'border-mint-500 bg-mint-100 text-mint-500' : 'border-line bg-surface text-ink-soft'
+            read ? 'border-mint-500 bg-mint-100 text-mint-ink' : 'border-line bg-surface text-ink-soft'
           }`}
         >
           {read ? '✓ Read' : 'Mark as read'}
@@ -269,7 +270,7 @@ export function EssayReader() {
         <div className="flex flex-wrap items-baseline justify-between gap-2">
           <h2 className="font-semibold">Now write your own answer</h2>
           <span
-            className={`text-sm font-semibold ${draftWords >= TARGET_WORDS ? 'text-mint-500' : 'text-ink-soft'}`}
+            className={`text-sm font-semibold ${draftWords >= TARGET_WORDS ? 'text-mint-ink' : 'text-ink-soft'}`}
           >
             {draftWords} / {TARGET_WORDS} words
           </span>
@@ -295,7 +296,7 @@ export function EssayReader() {
             onClick={() => {
               if (window.confirm('Clear your written answer for this essay?')) es.setDraft(n, '');
             }}
-            className="mt-3 text-sm font-medium text-rose-500 hover:underline"
+            className="mt-3 text-sm font-medium text-rose-ink hover:underline"
           >
             Clear answer
           </button>
@@ -309,7 +310,7 @@ export function EssayReader() {
             es.markRead(n);
             if (n < ESSAYS.length) navigate(`/essays/${n + 1}`);
           }}
-          className="rounded-full bg-brand-500 px-4 py-2 font-semibold text-white shadow-sm hover:bg-brand-600"
+          className="rounded-full bg-brand-500 px-4 py-2 font-semibold text-on-brand shadow-sm hover:bg-brand-600"
         >
           {read ? 'Next essay ›' : 'Mark read & next ›'}
         </button>
@@ -356,7 +357,7 @@ function Segmented<T extends string>({
             key={o.key}
             onClick={() => onChange(o.key)}
             className={`flex-1 rounded-full px-3 py-1 font-medium transition ${
-              value === o.key ? 'bg-brand-500 text-white' : 'text-ink-soft hover:text-ink'
+              value === o.key ? 'bg-brand-500 text-on-brand' : 'text-ink-soft hover:text-ink'
             }`}
           >
             {o.label}

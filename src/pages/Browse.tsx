@@ -6,9 +6,9 @@ import type { MasteryStatus } from '../types';
 
 const STATUS_STYLES: Record<MasteryStatus, string> = {
   new: 'bg-ink-soft/10 text-ink-soft',
-  learning: 'bg-amber-100 text-amber-500',
+  learning: 'bg-amber-100 text-amber-ink',
   review: 'bg-brand-100 text-brand-600',
-  mastered: 'bg-mint-100 text-mint-500',
+  mastered: 'bg-mint-100 text-mint-ink',
 };
 
 export function Browse() {
@@ -63,7 +63,7 @@ export function Browse() {
             <button
               onClick={() => selectTheme(null)}
               className={`shrink-0 rounded-lg px-3 py-2 text-left text-sm font-medium transition ${
-                activeThemeId === null ? 'bg-brand-500 text-white' : 'hover:bg-brand-50'
+                activeThemeId === null ? 'bg-brand-500 text-on-brand' : 'hover:bg-brand-50'
               }`}
             >
               All themes
@@ -73,7 +73,7 @@ export function Browse() {
                 key={theme.id}
                 onClick={() => selectTheme(theme.id)}
                 className={`shrink-0 rounded-lg px-3 py-2 text-left text-sm font-medium transition ${
-                  activeThemeId === theme.id ? 'bg-brand-500 text-white' : 'hover:bg-brand-50'
+                  activeThemeId === theme.id ? 'bg-brand-500 text-on-brand' : 'hover:bg-brand-50'
                 }`}
               >
                 {theme.id}. {theme.title}

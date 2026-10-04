@@ -79,7 +79,7 @@ export function Essays() {
           </Link>
           <button
             onClick={randomUnread}
-            className="rounded-full bg-brand-500 px-4 py-2 text-sm font-semibold text-white shadow-sm hover:bg-brand-600"
+            className="rounded-full bg-brand-500 px-4 py-2 text-sm font-semibold text-on-brand shadow-sm hover:bg-brand-600"
           >
             🎲 Random essay
           </button>
@@ -124,7 +124,7 @@ export function Essays() {
                 key={o.key}
                 onClick={() => setParam('status', o.key)}
                 className={`rounded-full px-3 py-1 font-medium transition ${
-                  status === o.key ? 'bg-brand-500 text-white' : 'text-ink-soft hover:text-ink'
+                  status === o.key ? 'bg-brand-500 text-on-brand' : 'text-ink-soft hover:text-ink'
                 }`}
               >
                 {o.label}
@@ -164,8 +164,8 @@ export function Essays() {
               <div className="flex items-center justify-between gap-2">
                 <span className="text-sm font-bold text-brand-500">Essay {e.n}</span>
                 <span className="flex items-center gap-2 text-xs font-semibold">
-                  {isSaved(e.n) && <span className="text-amber-500">★ Saved</span>}
-                  {isRead(e.n) && <span className="rounded-full bg-mint-100 px-2 py-0.5 text-mint-500">✓ Read</span>}
+                  {isSaved(e.n) && <span className="text-amber-ink">★ Saved</span>}
+                  {isRead(e.n) && <span className="rounded-full bg-mint-100 px-2 py-0.5 text-mint-ink">✓ Read</span>}
                 </span>
               </div>
               <p className="line-clamp-3 text-sm font-medium leading-snug">{questionText(e)}</p>
@@ -196,7 +196,7 @@ function Chip({ active, onClick, children }: { active: boolean; onClick: () => v
     <button
       onClick={onClick}
       className={`shrink-0 whitespace-nowrap rounded-full border px-3 py-1.5 text-sm font-medium transition ${
-        active ? 'border-brand-500 bg-brand-500 text-white' : 'border-line bg-surface text-ink-soft hover:border-brand-300'
+        active ? 'border-brand-500 bg-brand-500 text-on-brand' : 'border-line bg-surface text-ink-soft hover:border-brand-300'
       }`}
     >
       {children}
