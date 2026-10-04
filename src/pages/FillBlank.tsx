@@ -106,6 +106,7 @@ export function FillBlank() {
           value={themeId ?? ''}
           onChange={(e) => restart(e.target.value ? Number(e.target.value) : null)}
           className="min-w-0 max-w-[55%] rounded-lg border border-line bg-surface px-3 py-1.5 text-sm"
+          aria-label="Filter by theme"
         >
           <option value="">All themes</option>
           {THEMES.map((t) => (
@@ -130,7 +131,7 @@ export function FillBlank() {
           </p>
           <button
             onClick={() => restart(themeId)}
-            className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600"
+            className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-on-brand hover:bg-brand-600"
           >
             New round
           </button>
@@ -169,7 +170,7 @@ export function FillBlank() {
                 <button
                   onClick={submit}
                   disabled={!session.answer.trim()}
-                  className="flex-1 rounded-lg bg-brand-500 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-40"
+                  className="flex-1 rounded-lg bg-brand-500 py-2.5 text-sm font-semibold text-on-brand hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   Check
                 </button>
@@ -186,7 +187,7 @@ export function FillBlank() {
             <div className="mt-5 flex flex-col gap-3">
               <div
                 className={`rounded-lg p-3 text-sm font-medium ${
-                  session.wasCorrect ? 'bg-mint-100 text-mint-500' : 'bg-rose-100 text-rose-500'
+                  session.wasCorrect ? 'bg-mint-100 text-mint-ink' : 'bg-rose-100 text-rose-ink'
                 }`}
               >
                 {session.wasCorrect ? 'Correct!' : `Not quite — correct answer: "${blank.answer}"`}
@@ -195,7 +196,7 @@ export function FillBlank() {
               <p className="text-sm italic text-ink-soft">“{item.example}”</p>
               <button
                 onClick={next}
-                className="self-start rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600"
+                className="self-start rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-on-brand hover:bg-brand-600"
               >
                 Next →
               </button>

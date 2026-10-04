@@ -25,7 +25,7 @@ export function formatWhen(ms: number): string {
 }
 
 export function scoreTone(pct: number): string {
-  if (pct >= 80) return 'text-mint-500 bg-mint-100';
-  if (pct >= 50) return 'text-amber-500 bg-amber-100';
-  return 'text-rose-500 bg-rose-100';
+  if (pct >= 80) return 'text-mint-ink bg-mint-100';
+  if (pct >= 50) return 'text-amber-ink bg-amber-100';
+  return 'text-rose-ink bg-rose-100';
 }

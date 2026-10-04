@@ -138,7 +138,7 @@ export function Settings() {
               {!confirmDisconnect ? (
                 <button
                   onClick={() => setConfirmDisconnect(true)}
-                  className="rounded-lg border border-line px-4 py-2 text-sm font-semibold text-rose-500 hover:bg-rose-100"
+                  className="rounded-lg border border-line px-4 py-2 text-sm font-semibold text-rose-ink hover:bg-rose-100"
                 >
                   Disconnect this device
                 </button>
@@ -149,7 +149,7 @@ export function Settings() {
                       sync.disconnect();
                       setConfirmDisconnect(false);
                     }}
-                    className="rounded-lg bg-rose-500 px-4 py-2 text-sm font-semibold text-white"
+                    className="rounded-lg bg-[#c13a4d] px-4 py-2 text-sm font-semibold text-white"
                   >
                     Yes, disconnect
                   </button>
@@ -177,13 +177,13 @@ export function Settings() {
             <div className="mt-4 flex gap-2 text-sm">
               <button
                 onClick={() => setMode('new')}
-                className={`rounded-full px-3 py-1 font-medium ${mode === 'new' ? 'bg-brand-500 text-white' : 'border border-line'}`}
+                className={`rounded-full px-3 py-1 font-medium ${mode === 'new' ? 'bg-brand-500 text-on-brand' : 'border border-line'}`}
               >
                 Set up new sync
               </button>
               <button
                 onClick={() => setMode('existing')}
-                className={`rounded-full px-3 py-1 font-medium ${mode === 'existing' ? 'bg-brand-500 text-white' : 'border border-line'}`}
+                className={`rounded-full px-3 py-1 font-medium ${mode === 'existing' ? 'bg-brand-500 text-on-brand' : 'border border-line'}`}
               >
                 Join existing
               </button>
@@ -208,18 +208,18 @@ export function Settings() {
               <button
                 onClick={handleConnect}
                 disabled={sync.status === 'syncing' || !tokenInput.trim() || (mode === 'existing' && !gistIdInput.trim())}
-                className="rounded-lg bg-brand-500 py-2.5 text-sm font-semibold text-white hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-40"
+                className="rounded-lg bg-brand-500 py-2.5 text-sm font-semibold text-on-brand hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-40"
               >
                 {sync.status === 'syncing' ? 'Connecting…' : 'Enable sync'}
               </button>
-              {sync.status === 'error' && <p className="text-sm text-rose-500">{sync.error}</p>}
+              {sync.status === 'error' && <p className="text-sm text-rose-ink">{sync.error}</p>}
             </div>
           </>
         )}
       </section>
 
       <section className="rounded-2xl border border-rose-500/40 bg-rose-100 p-5">
-        <h2 className="font-semibold text-rose-500">Danger zone</h2>
+        <h2 className="font-semibold text-rose-ink">Danger zone</h2>
         <p className="mt-1 text-sm text-ink-soft">
           Reset wipes every collocation's mastery status, streak history, and writing notes. Export first if you want
           a backup.
@@ -227,7 +227,7 @@ export function Settings() {
         {!confirmReset ? (
           <button
             onClick={() => setConfirmReset(true)}
-            className="mt-4 rounded-lg border border-rose-500 px-4 py-2 text-sm font-semibold text-rose-500 hover:bg-rose-500 hover:text-white"
+            className="mt-4 rounded-lg border border-rose-500 px-4 py-2 text-sm font-semibold text-rose-ink hover:bg-[#c13a4d] hover:text-white"
           >
             Reset all progress
           </button>
@@ -239,7 +239,7 @@ export function Settings() {
                 setConfirmReset(false);
                 setMessage('Progress reset.');
               }}
-              className="rounded-lg bg-rose-500 px-4 py-2 text-sm font-semibold text-white"
+              className="rounded-lg bg-[#c13a4d] px-4 py-2 text-sm font-semibold text-white"
             >
               Yes, reset everything
             </button>

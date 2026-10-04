@@ -99,6 +99,7 @@ export function MultipleChoice() {
           value={themeId ?? ''}
           onChange={(e) => restart(e.target.value ? Number(e.target.value) : null)}
           className="min-w-0 max-w-[55%] rounded-lg border border-line bg-surface px-3 py-1.5 text-sm"
+          aria-label="Filter by theme"
         >
           <option value="">All themes</option>
           {THEMES.map((t) => (
@@ -124,7 +125,7 @@ export function MultipleChoice() {
           </p>
           <button
             onClick={() => restart(themeId)}
-            className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600"
+            className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-on-brand hover:bg-brand-600"
           >
             New round
           </button>
@@ -161,9 +162,9 @@ export function MultipleChoice() {
                   disabled={showResult}
                   className={`rounded-lg border-2 px-4 py-3 text-left text-sm transition ${
                     showResult && isCorrect
-                      ? 'border-mint-500 bg-mint-100 text-mint-500'
+                      ? 'border-mint-500 bg-mint-100 text-mint-ink'
                       : showResult && isSubmittedChoice
-                        ? 'border-rose-500 bg-rose-100 text-rose-500'
+                        ? 'border-rose-500 bg-rose-100 text-rose-ink'
                         : !showResult && isPicked
                           ? 'border-brand-500 bg-brand-50'
                           : 'border-line hover:border-brand-300 hover:bg-brand-50'
@@ -179,7 +180,7 @@ export function MultipleChoice() {
             <button
               onClick={submitPicked}
               disabled={!session.picked}
-              className="mt-5 w-full rounded-lg bg-brand-500 py-2.5 text-sm font-semibold text-white transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-40"
+              className="mt-5 w-full rounded-lg bg-brand-500 py-2.5 text-sm font-semibold text-on-brand transition hover:bg-brand-600 disabled:cursor-not-allowed disabled:opacity-40"
             >
               Submit answer
             </button>
@@ -188,7 +189,7 @@ export function MultipleChoice() {
               <p className="text-sm italic text-ink-soft">“{q.item.example}”</p>
               <button
                 onClick={next}
-                className="self-start rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600"
+                className="self-start rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-on-brand hover:bg-brand-600"
               >
                 Next →
               </button>

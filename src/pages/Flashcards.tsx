@@ -97,6 +97,7 @@ export function Flashcards() {
           value={themeId ?? ''}
           onChange={(e) => restart(e.target.value ? Number(e.target.value) : null)}
           className="min-w-0 max-w-[55%] rounded-lg border border-line bg-surface px-3 py-1.5 text-sm"
+          aria-label="Filter by theme"
         >
           <option value="">All themes</option>
           {THEMES.map((t) => (
@@ -129,7 +130,7 @@ export function Flashcards() {
           <div className="flex gap-3">
             <button
               onClick={() => restart(themeId)}
-              className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-600"
+              className="rounded-lg bg-brand-500 px-4 py-2 text-sm font-semibold text-on-brand hover:bg-brand-600"
             >
               Start new session
             </button>
@@ -165,16 +166,16 @@ export function Flashcards() {
           {!flipped ? (
             <button
               onClick={() => setFlipped(true)}
-              className="w-full rounded-xl bg-brand-500 py-3 text-sm font-semibold text-white hover:bg-brand-600"
+              className="w-full rounded-xl bg-brand-500 py-3 text-sm font-semibold text-on-brand hover:bg-brand-600"
             >
               Show answer
             </button>
           ) : (
             <div className="grid w-full grid-cols-4 gap-2">
-              <GradeButton label="Again" hint="<10m" tone="bg-rose-500" onClick={() => grade('again')} />
-              <GradeButton label="Hard" hint="short" tone="bg-amber-500" onClick={() => grade('hard')} />
-              <GradeButton label="Good" hint="normal" tone="bg-brand-500" onClick={() => grade('good')} />
-              <GradeButton label="Easy" hint="long" tone="bg-mint-500" onClick={() => grade('easy')} />
+              <GradeButton label="Again" hint="<10m" tone="bg-[#c13a4d] text-white" onClick={() => grade('again')} />
+              <GradeButton label="Hard" hint="short" tone="bg-amber-500 text-[#1b1a22]" onClick={() => grade('hard')} />
+              <GradeButton label="Good" hint="normal" tone="bg-brand-500 text-on-brand" onClick={() => grade('good')} />
+              <GradeButton label="Easy" hint="long" tone="bg-mint-500 text-[#1b1a22]" onClick={() => grade('easy')} />
             </div>
           )}
         </>
@@ -197,10 +198,10 @@ function GradeButton({
   return (
     <button
       onClick={onClick}
-      className={`flex flex-col items-center rounded-xl py-2.5 text-sm font-semibold text-white transition hover:brightness-110 ${tone}`}
+      className={`flex flex-col items-center rounded-xl py-2.5 text-sm font-semibold transition hover:brightness-110 ${tone}`}
     >
       {label}
-      <span className="text-[10px] font-normal opacity-80">{hint}</span>
+      <span className="text-[10px] font-normal">{hint}</span>
     </button>
   );
 }

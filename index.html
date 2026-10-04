@@ -2,19 +2,181 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="description" content="Practice all 1000 IELTS collocations with spaced-repetition flashcards, fill-in-the-blank drills, quizzes, and writing prompts." />
+    <title>1000 IELTS Collocations — Free Practice App</title>
+    <meta
+      name="description"
+      content="Learn 1000 IELTS collocations with spaced-repetition flashcards, fill-in-the-blank drills, quizzes, writing practice and model essays. Free, no sign-up."
+    />
+    <link rel="canonical" href="https://shakoorattari.com/ielts/" />
+    <meta name="robots" content="index, follow, max-image-preview:large" />
+    <meta name="author" content="Shakoor Hussain Attari" />
+    <meta name="color-scheme" content="light dark" />
+    <meta name="theme-color" content="#f7f6f3" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#131218" media="(prefers-color-scheme: dark)" />
+
+    <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+    <link rel="apple-touch-icon" href="./apple-touch-icon.png" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="1000 IELTS Collocations" />
+    <meta property="og:locale" content="en" />
+    <meta property="og:url" content="https://shakoorattari.com/ielts/" />
+    <meta property="og:title" content="1000 IELTS Collocations — Free Practice App" />
+    <meta
+      property="og:description"
+      content="Learn 1000 IELTS collocations with spaced-repetition flashcards, fill-in-the-blank drills, quizzes, writing practice and model essays. Free, no sign-up."
+    />
+    <meta property="og:image" content="https://shakoorattari.com/ielts/og-image.jpg" />
+    <meta property="og:image:type" content="image/jpeg" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="1000 IELTS Collocations: a free practice app with flashcards, drills, quizzes and model essays"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="1000 IELTS Collocations — Free Practice App" />
+    <meta
+      name="twitter:description"
+      content="Learn 1000 IELTS collocations with spaced-repetition flashcards, fill-in-the-blank drills, quizzes, writing practice and model essays. Free, no sign-up."
+    />
+    <meta name="twitter:image" content="https://shakoorattari.com/ielts/og-image.jpg" />
+    <meta
+      name="twitter:image:alt"
+      content="1000 IELTS Collocations: a free practice app with flashcards, drills, quizzes and model essays"
+    />
+
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "@id": "https://shakoorattari.com/ielts/#app",
+        "name": "1000 IELTS Collocations — Practice App",
+        "url": "https://shakoorattari.com/ielts/",
+        "description": "Learn 1000 IELTS collocations with spaced-repetition flashcards, fill-in-the-blank drills, quizzes, writing practice and model essays. Free, no sign-up.",
+        "applicationCategory": "EducationalApplication",
+        "operatingSystem": "Any (web browser)",
+        "browserRequirements": "Requires JavaScript",
+        "inLanguage": "en",
+        "isAccessibleForFree": true,
+        "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+        "image": "https://shakoorattari.com/ielts/og-image.jpg",
+        "featureList": [
+          "1000 IELTS collocations in 10 themes and 100 topics",
+          "Spaced-repetition flashcards",
+          "Fill-in-the-blank drills",
+          "Multiple-choice meaning quiz",
+          "Writing practice by topic",
+          "Model essays with key-phrase meanings",
+          "Searchable phrase bank",
+          "Progress tracking and daily streak",
+          "Optional private cross-device sync"
+        ],
+        "author": {
+          "@type": "Person",
+          "@id": "https://shakoorattari.com/#person",
+          "name": "Shakoor Hussain Attari",
+          "url": "https://shakoorattari.com/"
+        }
+      }
+    </script>
+
     <script>
       try {
         var t = localStorage.getItem('ielts-theme');
         if (t && t !== 'auto') document.documentElement.setAttribute('data-theme', t);
       } catch (e) {}
     </script>
-    <title>1000 IELTS Collocations — Practice App</title>
+
+    <!-- Painted before the app loads and replaced when React mounts (createRoot clears #root). It is what
+         crawlers that don't run JavaScript, link previewers and AI assistants read. Keep it truthful and
+         in step with the app; scripts/check-seo.mjs guards the basics. -->
+    <style>
+      .shell {
+        max-width: 44rem;
+        margin: 0 auto;
+        padding: 2.5rem 1rem 3rem;
+        line-height: 1.6;
+      }
+      .shell h1 {
+        margin: 0 0 0.5rem;
+        font-size: 1.75rem;
+        font-weight: 700;
+        line-height: 1.25;
+        letter-spacing: -0.01em;
+      }
+      .shell h2 {
+        margin: 2rem 0 0.5rem;
+        font-size: 1.125rem;
+        font-weight: 700;
+      }
+      .shell p,
+      .shell ul {
+        margin: 0.5rem 0;
+      }
+      .shell ul {
+        padding-left: 1.25rem;
+        list-style: disc;
+      }
+      .shell a {
+        color: var(--color-brand-600);
+        text-decoration: underline;
+      }
+      .shell small {
+        color: var(--color-ink-soft);
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <main class="shell">
+        <h1>1000 IELTS Collocations — Free Practice App</h1>
+        <p>
+          A free web app for learning the 1000 collocations that help IELTS candidates write and speak naturally, with
+          flashcards that adapt to what you remember. There is nothing to install and no account to create.
+        </p>
+        <noscript>
+          <p><strong>This app needs JavaScript.</strong> Turn it on in your browser settings and reload the page.</p>
+        </noscript>
+
+        <h2>What you can practise</h2>
+        <ul>
+          <li>
+            <strong>1000 collocations</strong> in 10 themes and 100 topics, each with a meaning and an example
+            sentence, searchable by topic or phrase.
+          </li>
+          <li><strong>Flashcards</strong> with spaced repetition: cards you find hard come back sooner.</li>
+          <li><strong>Fill the blank</strong> drills that train you to recall the missing phrase.</li>
+          <li><strong>Quick quizzes</strong> that test the meanings of collocations.</li>
+          <li><strong>Writing practice</strong>: write your own sentences for each topic and tick off the phrases you used.</li>
+          <li>
+            <strong>Model essays</strong> for IELTS Writing Task 2 with the key phrases highlighted and explained, and
+            an A–Z phrase bank.
+          </li>
+          <li>Progress tracking, a daily streak and your attempt history.</li>
+        </ul>
+
+        <h2>Your progress stays with you</h2>
+        <p>
+          Everything is saved in your own browser. There are no accounts and no advertising or analytics. You can
+          optionally sync your progress between devices through a private GitHub Gist that you control.
+        </p>
+
+        <h2>About</h2>
+        <p>
+          Built by <a href="https://shakoorattari.com/">Shakoor Hussain Attari</a>, a software engineer based in
+          Sharjah, UAE.
+        </p>
+        <p>
+          <small
+            >This is an independent study tool, not affiliated with or endorsed by the organisations that own the IELTS
+            test. Model essays: © Hardev Sir’s IELTS Institute, Bathinda — www.ieltshardev.com. Reformatted for easy reading
+            on this site; key-phrase meanings added.</small
+          >
+        </p>
+      </main>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

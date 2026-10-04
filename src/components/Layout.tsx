@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useProgress } from '../lib/progressContext';
 import { useCloudSync } from '../lib/cloudSyncContext';
 import { ThemeMenu } from './ThemeMenu';
+import { useRouteTitle } from '../lib/documentTitle';
 
 const NAV_ITEMS = [
   { to: '/', label: 'Dashboard', icon: '🏠', end: true },
@@ -20,6 +21,7 @@ export function Layout() {
   const { dueCount, streak } = useProgress();
   const sync = useCloudSync();
   const location = useLocation();
+  useRouteTitle();
   // The menu is open only for the route it was opened on, so navigating closes it.
   const [openAt, setOpenAt] = useState<string | null>(null);
   const menuOpen = openAt === location.pathname;
@@ -65,7 +67,7 @@ export function Layout() {
           </button>
 
           <NavLink to="/" className="flex min-w-0 items-center gap-2 shrink-0">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-brand-500 text-sm font-bold text-white">
+            <span className="grid h-8 w-8 place-items-center rounded-lg bg-brand-500 text-sm font-bold text-on-brand">
               IE
             </span>
             <span className="flex flex-col leading-tight">
@@ -85,7 +87,7 @@ export function Layout() {
                 className={({ isActive }) =>
                   `shrink-0 whitespace-nowrap rounded-full px-2.5 py-1.5 font-medium transition-colors ${
                     isActive
-                      ? 'bg-brand-500 text-white'
+                      ? 'bg-brand-500 text-on-brand'
                       : 'text-ink-soft hover:bg-brand-50 hover:text-ink'
                   }`
                 }
@@ -96,13 +98,13 @@ export function Layout() {
           </nav>
 
           <div className="ml-auto flex shrink-0 items-center gap-1.5 text-xs font-semibold sm:gap-2 xl:ml-0">
-            <span className="flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-amber-500">
+            <span className="flex items-center gap-1 rounded-full bg-amber-100 px-2.5 py-1 text-amber-ink">
               🔥 {streak}
             </span>
             {dueCount > 0 && (
               <NavLink
                 to="/flashcards"
-                className="flex items-center gap-1 rounded-full bg-rose-100 px-2.5 py-1 text-rose-500"
+                className="flex items-center gap-1 rounded-full bg-rose-100 px-2.5 py-1 text-rose-ink"
               >
                 {dueCount}
                 <span className="hidden min-[400px]:inline">due</span>
@@ -113,7 +115,7 @@ export function Layout() {
                 to="/settings"
                 title={sync.status === 'error' ? `Sync error: ${sync.error}` : 'Synced across devices'}
                 className={`hidden items-center gap-1 rounded-full px-2.5 py-1 sm:flex ${
-                  sync.status === 'error' ? 'bg-rose-100 text-rose-500' : 'bg-mint-100 text-mint-500'
+                  sync.status === 'error' ? 'bg-rose-100 text-rose-ink' : 'bg-mint-100 text-mint-ink'
                 }`}
               >
                 {sync.status === 'syncing' ? '↻' : sync.status === 'error' ? '⚠' : '☁'}
@@ -144,7 +146,7 @@ export function Layout() {
                   end={item.end}
                   className={({ isActive }) =>
                     `flex items-center gap-2.5 rounded-xl px-3 py-3 text-sm font-medium transition-colors ${
-                      isActive ? 'bg-brand-500 text-white' : 'bg-canvas text-ink hover:bg-brand-50'
+                      isActive ? 'bg-brand-500 text-on-brand' : 'bg-canvas text-ink hover:bg-brand-50'
                     }`
                   }
                 >
@@ -160,6 +162,15 @@ export function Layout() {
       <main className="mx-auto max-w-6xl px-4 py-6 sm:px-6">
         <Outlet />
       </main>
+
+      <footer className="mx-auto max-w-6xl px-4 pb-8 pt-2 text-center text-xs text-ink-soft sm:px-6">
+        Built by{' '}
+        <a href="https://shakoorattari.com/" className="font-medium text-brand-700 underline underline-offset-2">
+          Shakoor Hussain Attari
+        </a>
+        . Your progress is saved only in this browser. An independent study tool, not affiliated with or endorsed by the
+        organisations that own the IELTS test.
+      </footer>
     </div>
   );
 }

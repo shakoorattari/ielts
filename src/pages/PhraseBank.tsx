@@ -94,7 +94,7 @@ function LetterBtn({
       disabled={disabled}
       className={`min-w-8 rounded-lg px-2 py-1 text-sm font-semibold transition ${
         active
-          ? 'bg-brand-500 text-white'
+          ? 'bg-brand-500 text-on-brand'
           : disabled
             ? 'text-ink-soft/40'
             : 'text-ink-soft hover:bg-brand-50 hover:text-ink'

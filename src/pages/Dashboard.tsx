@@ -36,9 +36,9 @@ export function Dashboard() {
       </section>
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatCard label="Mastered" value={statusCounts.mastered} sub={`of ${total}`} tone="text-mint-500" />
+        <StatCard label="Mastered" value={statusCounts.mastered} sub={`of ${total}`} tone="text-mint-ink" />
         <StatCard label="In review" value={statusCounts.review} tone="text-brand-500" />
-        <StatCard label="Learning" value={statusCounts.learning} tone="text-amber-500" />
+        <StatCard label="Learning" value={statusCounts.learning} tone="text-amber-ink" />
         <StatCard label="Not started" value={statusCounts.new} tone="text-ink-soft" />
       </section>
 

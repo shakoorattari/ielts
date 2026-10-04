@@ -7,7 +7,7 @@ export function SourceCredit() {
         href="https://www.ieltshardev.com"
         target="_blank"
         rel="noreferrer"
-        className="font-medium text-brand-500 hover:underline"
+        className="font-medium text-brand-700 underline underline-offset-2"
       >
         www.ieltshardev.com
       </a>
