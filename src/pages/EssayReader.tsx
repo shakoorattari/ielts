@@ -2,6 +2,7 @@ import { Fragment, useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { ESSAYS, ESSAY_BY_N, readMinutes, topicLabel, typeLabel } from '../lib/essays';
 import { useEssayState } from '../lib/essayState';
+import { SourceCredit } from '../components/SourceCredit';
 
 const TARGET_WORDS = 250;
 
@@ -257,6 +258,7 @@ export function EssayReader() {
         </button>
         <NavBtn to={n < ESSAYS.length ? `/essays/${n + 1}` : null}>Essay {n + 1} ›</NavBtn>
       </div>
+      <SourceCredit />
     </article>
   );
 }

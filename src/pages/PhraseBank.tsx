@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { PHRASE_BANK, phraseLetter } from '../lib/essays';
+import { SourceCredit } from '../components/SourceCredit';
 
 const LETTERS = ['#', ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'];
 
@@ -71,6 +72,7 @@ export function PhraseBank() {
           </div>
         ))}
       </div>
+      <SourceCredit />
     </div>
   );
 }

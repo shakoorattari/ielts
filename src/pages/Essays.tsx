@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
 import { ESSAYS, TOPICS, TYPES, matchesQuery, questionText, readMinutes, topicLabel, typeLabel } from '../lib/essays';
 import { useEssayState } from '../lib/essayState';
+import { SourceCredit } from '../components/SourceCredit';
 
 type StatusFilter = 'all' | 'unread' | 'read' | 'saved';
 
@@ -176,6 +177,7 @@ export function Essays() {
           ))}
         </div>
       )}
+      <SourceCredit />
     </div>
   );
 }
