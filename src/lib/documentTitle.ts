@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-export const APP_TITLE = '1000 IELTS Collocations — Free Practice App';
+export const APP_TITLE = 'IELTS Band Builder: Free Study Guide, 1000 Collocations';
 
-const SUFFIX = ' — IELTS Prep';
+const SUFFIX = ' — IELTS Band Builder';
 
 // A distinct title per screen: screen readers announce it on navigation (WCAG 2.4.2) and browser tabs, history
 // and bookmarks stay readable. The dashboard keeps the full app title. Essay pages set their own (EssayReader).
