@@ -66,12 +66,12 @@ export function Layout() {
             </svg>
           </button>
 
-          <NavLink to="/" className="flex min-w-0 items-center gap-2 shrink-0">
-            <span className="grid h-8 w-8 place-items-center rounded-lg bg-brand-500 text-sm font-bold text-on-brand">
+          <NavLink to="/" className="flex min-w-0 items-center gap-2">
+            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-brand-500 text-sm font-bold text-on-brand">
               IE
             </span>
-            <span className="flex flex-col leading-tight">
-              <span className="text-sm font-semibold tracking-tight">IELTS Prep</span>
+            <span className="flex min-w-0 flex-col leading-tight">
+              <span className="truncate text-sm font-semibold tracking-tight">IELTS Study Guide</span>
               <span className="hidden text-[10px] font-semibold uppercase tracking-wide text-brand-500 min-[400px]:block">
                 Collocations &amp; Essays
               </span>
