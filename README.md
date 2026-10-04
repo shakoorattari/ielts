@@ -1,8 +1,8 @@
-# 1000 IELTS Collocations — Practice App
+# IELTS Study Guide — 1000 Collocations and Model Essays
 
 **Live:** https://shakoorattari.com/ielts/
 
-A focused practice app for memorizing and actively using the **1000 IELTS collocations**
+A focused study guide and practice app for memorizing and actively using the **1000 IELTS collocations**
 (10 themes × 10 topics × 10 collocations each) needed for a Band 8 writing/speaking score.
 
 Built with React, TypeScript, Tailwind CSS, and a local spaced-repetition engine —
