@@ -45,7 +45,7 @@ export function EssayReader() {
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
-    if (essay) document.title = `Essay ${essay.n} — IELTS Study Guide`;
+    if (essay) document.title = `Essay ${essay.n} — IELTS Band Builder`;
     return () => {
       document.title = APP_TITLE;
     };

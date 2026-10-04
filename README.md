@@ -1,4 +1,4 @@
-# IELTS Study Guide — 1000 Collocations and Model Essays
+# IELTS Band Builder — a free IELTS study guide
 
 **Live:** https://shakoorattari.com/ielts/
 

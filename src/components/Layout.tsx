@@ -71,7 +71,7 @@ export function Layout() {
               IE
             </span>
             <span className="flex min-w-0 flex-col leading-tight">
-              <span className="truncate text-sm font-semibold tracking-tight">IELTS Study Guide</span>
+              <span className="truncate text-sm font-semibold tracking-tight">IELTS Band Builder</span>
               <span className="hidden text-[10px] font-semibold uppercase tracking-wide text-brand-500 min-[400px]:block">
                 Collocations &amp; Essays
               </span>
