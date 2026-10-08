@@ -24,6 +24,15 @@ optional opt-in sync to keep it consistent across devices (see below).
 - **History** — every completed Flashcards/Fill the Blank/Quick Quiz round is logged with its
   score, theme, and timestamp; the Dashboard also surfaces the most recent attempts.
 
+- **Synonym upgrades** (`#/synonyms`) — the 50 plain words that appear in most essays (people,
+  important, good…) with 134 precise upgrades, built around the guide's four-step system (pick your
+  starting five → context practice → pressure testing → integration). Each word page has a
+  swap-in sentence viewer, audio, memory hooks, "use with care" notes and your own sentences.
+  Practise five ways: spaced-repetition **flashcards**, a **quiz** (upgrade the word, match the
+  meaning, tricky context questions), **type it** recall, **rewrite** drills (sentences and
+  paragraphs), and an **essay scanner** that marks overused plain words and suggests upgrades. A
+  **timed test** uses real essay questions with your target words tracked live, and a printable
+  **cheat sheet** saves as a PDF. Two explainer videos are embedded click-to-load.
 - **Model essays** — a library of 202 IELTS Task 2 essays, filterable by essay type
   (Agree/Disagree, Discuss Both Views, Advantages & Disadvantages, Cause/Effect/Solution,
   Combination) and by topic, with full-text search and a "random essay" button. The reader
@@ -74,6 +83,14 @@ topics, and the key-phrase table). It was parsed from the source PDF; the phrase
 hand-written short glosses. Essay reading progress, saved essays and written answers are kept in
 `localStorage` (`ielts-essays:v1`) and are not part of the Gist sync. The essay pages are
 code-split, so the ~0.5 MB of essay text only loads when you open them.
+
+`src/data/synonyms.json` holds the 50 synonym entries (guide notes and example sentences, plus the
+original practice sentences, memory hooks, cautions and context questions added here), six paragraph
+rewrite tasks and 68 essay questions for the timed test. Synonym progress (spaced-repetition cards,
+learned words, your starting five, own sentences, timed tests) lives in `localStorage`
+(`ielts-synonyms:v1`) and is not part of the Gist sync. The word list and notes are adapted from the
+"50 Synonyms That Actually Boost Your Score" guide by IELTS Advantage and credited in the app and in
+`index.html`. The YouTube embeds use `youtube-nocookie.com` and load only after the visitor presses play.
 
 ## Getting started
 
@@ -155,6 +172,9 @@ src/
     cloudSyncContext.tsx   React context: connect/disconnect/auto-push/pull
     essays.ts              essay data helpers: filters, search, phrase bank
     essayState.ts          localStorage store for read / saved / drafts / reader settings
+    synonyms.ts            synonym data helpers: cloze/span finding, text analysis, question generators
+    synState.ts            localStorage store for synonym cards, my words, sentences, timed tests
+    useSynScope.ts         ?set=my / ?topic= / ?word= scope shared by every synonym practice mode
   components/               shared UI (nav layout)
   pages/                    one file per route
 scripts/

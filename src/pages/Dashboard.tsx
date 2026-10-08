@@ -3,6 +3,7 @@ import { useProgress } from '../lib/progressContext';
 import { ALL_ITEMS } from '../lib/collocations';
 import { MODE_META, formatWhen, scoreTone, themeName } from '../lib/attempts';
 import { TOTAL_ESSAYS, nextUnread, useEssayState } from '../lib/essayState';
+import { TOTAL_WORDS, dueCardCount, useSynState } from '../lib/synState';
 
 function StatCard({ label, value, sub, tone }: { label: string; value: string | number; sub?: string; tone: string }) {
   return (
@@ -20,6 +21,9 @@ export function Dashboard() {
   const essays = useEssayState();
   const essaysRead = essays.state.read.length;
   const upNext = nextUnread(essays.state.read);
+  const syn = useSynState();
+  const synLearned = syn.state.learned.length;
+  const synDue = dueCardCount(syn.state);
   const recentAttempts = [...state.attempts].sort((a, b) => b.finishedAt - a.finishedAt).slice(0, 4);
 
   return (
@@ -79,10 +83,37 @@ export function Dashboard() {
         </Link>
       </section>
 
-      <section>
+      <section className="grid gap-3 lg:grid-cols-2">
+        <Link
+          to="/synonyms"
+          className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-5 shadow-sm transition hover:border-brand-300 hover:shadow-md"
+        >
+          <div className="flex-1">
+            <p className="text-2xl">🔁</p>
+            <p className="mt-2 font-semibold">50 synonym upgrades</p>
+            <p className="mt-1 text-sm text-ink-soft">
+              {synDue > 0
+                ? `${synDue} synonym card${synDue === 1 ? '' : 's'} due for review`
+                : synLearned > 0
+                  ? `${synLearned} of ${TOTAL_WORDS} words learned — keep going with quizzes and rewrite drills`
+                  : 'Swap plain words for precise ones. Flashcards, quizzes, an essay scanner and a timed test'}
+            </p>
+          </div>
+          <div>
+            <div className="h-2 overflow-hidden rounded-full bg-brand-50">
+              <div
+                className="h-full rounded-full bg-brand-500 transition-all"
+                style={{ width: `${(synLearned / TOTAL_WORDS) * 100}%` }}
+              />
+            </div>
+            <p className="mt-1 text-right text-xs text-ink-soft">
+              {synLearned}/{TOTAL_WORDS}
+            </p>
+          </div>
+        </Link>
         <Link
           to={upNext ? `/essays/${upNext}` : '/essays'}
-          className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-5 shadow-sm transition hover:border-brand-300 hover:shadow-md sm:flex-row sm:items-center"
+          className="flex flex-col gap-3 rounded-2xl border border-line bg-surface p-5 shadow-sm transition hover:border-brand-300 hover:shadow-md"
         >
           <div className="flex-1">
             <p className="text-2xl">📖</p>
@@ -95,7 +126,7 @@ export function Dashboard() {
                 : `All ${TOTAL_ESSAYS} essays read. Revisit any of them.`}
             </p>
           </div>
-          <div className="sm:w-56">
+          <div>
             <div className="h-2 overflow-hidden rounded-full bg-brand-50">
               <div
                 className="h-full rounded-full bg-brand-500 transition-all"
