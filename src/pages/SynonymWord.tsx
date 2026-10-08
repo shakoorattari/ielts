@@ -42,7 +42,7 @@ function WordView({ n }: { n: number }) {
 
   useEffect(() => {
     window.scrollTo({ top: 0 });
-    if (word) document.title = `${word.word}: synonyms — IELTS Band Builder`;
+    document.title = word ? `${word.word}: synonyms — IELTS Band Builder` : 'Word not found — IELTS Band Builder';
   }, [word]);
 
   useEffect(() => {
