@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SynScopePicker } from '../components/SynScopePicker';
 import { HighlightedText } from '../components/HighlightedText';
@@ -14,9 +14,12 @@ import {
   type RewriteItem,
 } from '../lib/synonyms';
 import { useSynState } from '../lib/synState';
+import { essayPlainText, useEssayLibrary } from '../lib/essayLibrary';
 import { useSynScope } from '../lib/useSynScope';
 
-type Tab = 'sentences' | 'paragraphs';
+type Tab = 'sentences' | 'paragraphs' | 'essays';
+
+const TAB_LABEL: Record<Tab, string> = { sentences: 'Sentences', paragraphs: 'Paragraphs', essays: 'From the essays' };
 
 export function SynRewrite() {
   const [tab, setTab] = useState<Tab>('sentences');
@@ -33,19 +36,19 @@ export function SynRewrite() {
         </p>
       </header>
       <div className="flex gap-1 self-start rounded-full bg-brand-50 p-1 text-sm">
-        {(['sentences', 'paragraphs'] as Tab[]).map((t) => (
+        {(['sentences', 'paragraphs', 'essays'] as Tab[]).map((t) => (
           <button
             key={t}
             onClick={() => setTab(t)}
-            className={`rounded-full px-4 py-1.5 font-medium capitalize transition ${
+            className={`rounded-full px-4 py-1.5 font-medium transition ${
               tab === t ? 'bg-brand-500 text-on-brand' : 'text-ink-soft hover:text-ink'
             }`}
           >
-            {t}
+            {TAB_LABEL[t]}
           </button>
         ))}
       </div>
-      {tab === 'sentences' ? <Sentences /> : <Paragraphs />}
+      {tab === 'sentences' ? <Sentences /> : tab === 'paragraphs' ? <Paragraphs /> : <EssayParagraphs />}
     </div>
   );
 }
@@ -238,14 +241,26 @@ function Paragraphs() {
   return <ParagraphTask key={task.id} task={task} onPick={setId} syn={syn} />;
 }
 
+interface ParagraphLike {
+  id: string;
+  title: string;
+  text: string;
+  /** A suggested upgraded version (absent for paragraphs taken from the model essays). */
+  model?: string;
+  /** Set when the paragraph comes from a model essay. */
+  essayN?: number;
+}
+
 function ParagraphTask({
   task,
   onPick,
   syn,
+  tabs = true,
 }: {
-  task: (typeof PARAGRAPHS)[number];
+  task: ParagraphLike;
   onPick: (id: string) => void;
   syn: ReturnType<typeof useSynState>;
+  tabs?: boolean;
 }) {
   const [text, setText] = useState(task.text);
   const [checked, setChecked] = useState(false);
@@ -261,28 +276,43 @@ function ParagraphTask({
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap gap-2">
-        {PARAGRAPHS.map((p) => (
-          <button
-            key={p.id}
-            onClick={() => onPick(p.id)}
-            className={`rounded-full border px-3 py-1.5 text-sm font-medium ${
-              p.id === task.id ? 'border-brand-500 bg-brand-500 text-on-brand' : 'border-line bg-surface text-ink-soft hover:border-brand-300'
-            }`}
-          >
-            {p.title}
-          </button>
-        ))}
-      </div>
+      {tabs && (
+        <div className="flex flex-wrap gap-2">
+          {PARAGRAPHS.map((p) => (
+            <button
+              key={p.id}
+              onClick={() => onPick(p.id)}
+              className={`rounded-full border px-3 py-1.5 text-sm font-medium ${
+                p.id === task.id ? 'border-brand-500 bg-brand-500 text-on-brand' : 'border-line bg-surface text-ink-soft hover:border-brand-300'
+              }`}
+            >
+              {p.title}
+            </button>
+          ))}
+        </div>
+      )}
 
       <div className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
-        <p className="text-xs font-semibold uppercase tracking-wide text-brand-600">The plain paragraph</p>
+        <p className="flex flex-wrap items-center justify-between gap-2 text-xs font-semibold uppercase tracking-wide text-brand-600">
+          <span>{task.essayN ? `A paragraph from Essay ${task.essayN}` : 'The plain paragraph'}</span>
+          {task.essayN && (
+            <Link to={`/essays/${task.essayN}`} className="normal-case text-brand-600 hover:underline">
+              Read the whole essay →
+            </Link>
+          )}
+        </p>
         <p className="mt-3 leading-relaxed">
           <HighlightedText text={task.text} segments={before.segments} />
         </p>
         <p className="mt-2 text-xs text-ink-soft">
-          <span className="rounded bg-amber-100 px-1 text-amber-ink">Highlighted</span> words are the plain words from the
-          guide. Upgrade as many as sound natural. You don’t need to change them all.
+          <span className="rounded bg-amber-100 px-1 text-amber-ink">Amber</span> words are the plain words from the guide.
+          {task.essayN && (
+            <>
+              {' '}
+              <span className="rounded bg-mint-100 px-1 text-mint-ink">Green</span> words are upgrades the essay already uses.
+            </>
+          )}{' '}
+          Upgrade as many plain words as sound natural. You don’t need to change them all.
         </p>
       </div>
 
@@ -312,9 +342,11 @@ function ParagraphTask({
         >
           Start again
         </button>
-        <button onClick={() => setShowModel((v) => !v)} className="rounded-full border border-line px-4 py-2.5 text-sm font-medium text-ink-soft hover:border-brand-300">
-          {showModel ? 'Hide' : 'Show'} a model upgrade
-        </button>
+        {task.model && (
+          <button onClick={() => setShowModel((v) => !v)} className="rounded-full border border-line px-4 py-2.5 text-sm font-medium text-ink-soft hover:border-brand-300">
+            {showModel ? 'Hide' : 'Show'} a model upgrade
+          </button>
+        )}
       </div>
 
       {checked && (
@@ -338,11 +370,93 @@ function ParagraphTask({
           )}
         </div>
       )}
-      {showModel && (
+      {showModel && task.model && (
         <div className="rounded-xl bg-mint-100 p-4 text-sm text-mint-ink">
           <p className="font-semibold">One possible upgrade</p>
           <p className="mt-1 leading-relaxed">{task.model}</p>
         </div>
+      )}
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ paragraphs from the model essays */
+
+interface EssayChunk {
+  n: number;
+  text: string;
+}
+
+function EssayParagraphs() {
+  const syn = useSynState();
+  const lib = useEssayLibrary();
+  const [picked, setPicked] = useState<EssayChunk | null>(null);
+
+  // Paragraphs of 35-95 words with at least three plain words are the best ones to practise on.
+  const chunks = useMemo<EssayChunk[]>(() => {
+    if (!lib.mod) return [];
+    const out: EssayChunk[] = [];
+    for (const e of lib.mod.ESSAYS) {
+      for (const p of essayPlainText(e).split('\n\n')) {
+        const words = p.split(/\s+/).length;
+        if (words >= 35 && words <= 95 && analyze(p).basic.reduce((sum, b) => sum + b.count, 0) >= 3) out.push({ n: e.n, text: p });
+      }
+    }
+    return out;
+  }, [lib.mod]);
+
+  const draw = useCallback(
+    (from: EssayChunk[], not?: EssayChunk | null) => {
+      const pool = from.filter((c) => c !== not);
+      if (pool.length) setPicked(pool[Math.floor(Math.random() * pool.length)]);
+    },
+    [],
+  );
+
+  if (!lib.mod) {
+    return (
+      <div className="flex flex-col gap-3">
+        <p className="text-ink-soft">
+          Practise on real writing: you get a paragraph from one of the 202 model essays, spot the plain words, and upgrade
+          them. Compare your version with the original essay afterwards.
+        </p>
+        <button
+          onClick={async () => {
+            await lib.load();
+          }}
+          disabled={lib.loading}
+          className="self-start rounded-full bg-brand-500 px-6 py-3 text-sm font-semibold text-on-brand shadow-sm hover:bg-brand-600 disabled:opacity-50"
+        >
+          {lib.loading ? 'Loading the essays…' : 'Get a paragraph'}
+        </button>
+      </div>
+    );
+  }
+
+  const current = picked ?? null;
+  return (
+    <div className="flex flex-col gap-4">
+      <div className="flex flex-wrap items-center gap-2">
+        <button
+          onClick={() => draw(chunks, current)}
+          className="rounded-full bg-brand-500 px-5 py-2.5 text-sm font-semibold text-on-brand shadow-sm hover:bg-brand-600"
+        >
+          {current ? '🎲 Another paragraph' : '🎲 Get a paragraph'}
+        </button>
+        <span className="text-xs text-ink-soft">{chunks.length} suitable paragraphs across the essays</span>
+      </div>
+      {current ? (
+        <ParagraphTask
+          key={`${current.n}-${current.text.slice(0, 24)}`}
+          task={{ id: `essay-${current.n}`, title: `Essay ${current.n}`, text: current.text, essayN: current.n }}
+          onPick={() => {}}
+          syn={syn}
+          tabs={false}
+        />
+      ) : (
+        <p className="rounded-xl border border-dashed border-line p-6 text-center text-sm text-ink-soft">
+          Press “Get a paragraph” to start.
+        </p>
       )}
     </div>
   );

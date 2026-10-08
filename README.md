@@ -32,7 +32,10 @@ optional opt-in sync to keep it consistent across devices (see below).
   meaning, tricky context questions), **type it** recall, **rewrite** drills (sentences and
   paragraphs), and an **essay scanner** that marks overused plain words and suggests upgrades. A
   **timed test** uses real essay questions with your target words tracked live, and a printable
-  **cheat sheet** saves as a PDF. Two explainer videos are embedded click-to-load.
+  **cheat sheet** saves as a PDF. The 202 model essays feed several of these: the scanner can load
+  any essay (or open from a "Scan vocabulary" button on each essay), each word page shows real
+  sentences from the essays that use its upgrades (or says when none do), and the rewrite drill
+  can serve paragraphs from the essays. The essay text is only fetched when one of these is used. Two explainer videos are embedded click-to-load.
 - **Model essays** — a library of 202 IELTS Task 2 essays, filterable by essay type
   (Agree/Disagree, Discuss Both Views, Advantages & Disadvantages, Cause/Effect/Solution,
   Combination) and by topic, with full-text search and a "random essay" button. The reader
@@ -175,6 +178,7 @@ src/
     synonyms.ts            synonym data helpers: cloze/span finding, text analysis, question generators
     synState.ts            localStorage store for synonym cards, my words, sentences, timed tests
     useSynScope.ts         ?set=my / ?topic= / ?word= scope shared by every synonym practice mode
+    essayLibrary.ts        on-demand loader for the essay text, used by the synonym pages
   components/               shared UI (nav layout)
   pages/                    one file per route
 scripts/

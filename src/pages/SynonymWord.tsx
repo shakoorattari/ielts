@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { SpeakButton } from '../components/SpeakButton';
 import { SynonymCredit } from '../components/SynonymCredit';
-import { TOPIC_LABEL, WORDS, WORD_BY_N, analyze, cardId, findSpan, type Syn } from '../lib/synonyms';
+import { TOPIC_LABEL, WORDS, WORD_BY_N, analyze, cardId, findSpan, modelUsage, type ModelUsage, type Syn } from '../lib/synonyms';
+import { useEssayLibrary } from '../lib/essayLibrary';
 import { MY_LIST_MAX, WORD_STAGES, stagesFor, useSynState } from '../lib/synState';
 
 const STATUS_STYLE: Record<string, string> = {
@@ -210,6 +211,8 @@ function WordView({ n }: { n: number }) {
         )}
       </section>
 
+      <ModelExamples n={n} />
+
       <section className="rounded-2xl border border-line bg-surface p-4 shadow-sm sm:p-5">
         <h2 className="text-lg font-semibold">Use it in your own sentence</h2>
         <p className="mt-1 text-sm text-ink-soft">
@@ -306,6 +309,64 @@ function WordView({ n }: { n: number }) {
 
       <SynonymCredit />
     </article>
+  );
+}
+
+function ModelExamples({ n }: { n: number }) {
+  const lib = useEssayLibrary();
+  const usage: ModelUsage[] | null = useMemo(() => (lib.mod ? modelUsage(lib.mod.ESSAYS, n) : null), [lib.mod, n]);
+  const word = WORD_BY_N[n];
+  return (
+    <section className="rounded-2xl border border-line bg-surface p-4 shadow-sm sm:p-5">
+      <h2 className="text-lg font-semibold">In the model essays</h2>
+      <p className="mt-1 text-sm text-ink-soft">
+        See how these upgrades are used in real, exam-style writing across all 202 essays.
+      </p>
+      {!usage ? (
+        <button
+          onClick={lib.load}
+          disabled={lib.loading}
+          className="mt-3 rounded-full bg-brand-500 px-5 py-2.5 text-sm font-semibold text-on-brand shadow-sm hover:bg-brand-600 disabled:opacity-50"
+        >
+          {lib.loading ? 'Searching the essays…' : 'Show real examples'}
+        </button>
+      ) : (
+        <div className="mt-4 flex flex-col gap-5">
+          {usage.map((u) => (
+            <div key={u.syn}>
+              <p className="flex flex-wrap items-baseline gap-2">
+                <strong className="text-base">{u.syn}</strong>
+                <span className="text-xs font-semibold text-ink-soft">
+                  {u.essays === 0 ? 'not used in any of the 202 essays' : `used in ${u.essays} of 202 essays`}
+                </span>
+              </p>
+              {u.essays === 0 ? (
+                <p className="mt-1 text-sm text-ink-soft">
+                  It is rare in this set of model writing. Make sure you are confident about it before using it in an essay.
+                </p>
+              ) : (
+                <ul className="mt-2 flex flex-col gap-2">
+                  {u.examples.map((ex) => (
+                    <li key={ex.n} className="rounded-lg bg-canvas p-3 text-sm leading-relaxed">
+                      “{ex.sentence.slice(0, ex.start)}
+                      <mark className="rounded bg-brand-100 px-1 font-semibold text-brand-700">{ex.sentence.slice(ex.start, ex.end)}</mark>
+                      {ex.sentence.slice(ex.end)}”{' '}
+                      <Link to={`/essays/${ex.n}`} className="whitespace-nowrap text-xs font-semibold text-brand-600 hover:underline">
+                        Essay {ex.n} →
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          ))}
+          <p className="text-xs text-ink-soft">
+            Searched for the upgrades of “{word.word.toLowerCase()}”. A word can appear in other senses too, so read each
+            sentence in context.
+          </p>
+        </div>
+      )}
+    </section>
   );
 }
 

@@ -1,7 +1,8 @@
-import { useMemo, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useMemo, useState } from 'react';
+import { Link, useSearchParams } from 'react-router-dom';
 import { HighlightedText } from '../components/HighlightedText';
 import { WORD_BY_N, analyze, upgradeVerdict, type Segment } from '../lib/synonyms';
+import { essayPlainText, loadEssays, useEssayLibrary } from '../lib/essayLibrary';
 
 const SAMPLE =
   "Many people think that technology is important in modern life. Technology can help students to learn, and it gives people good access to information. However, the government should provide more money for local schools, because different families have different needs. It is necessary for children to learn skills that are important for work.";
@@ -17,6 +18,50 @@ const TONE: Record<string, string> = {
 export function SynScanner() {
   const [text, setText] = useState('');
   const [active, setActive] = useState<number | null>(null);
+  const [params] = useSearchParams();
+  const lib = useEssayLibrary();
+  const [loaded, setLoaded] = useState<number | null>(null);
+  const [typeFilter, setTypeFilter] = useState('');
+  const [numberInput, setNumberInput] = useState('');
+  const [openPicker, setOpenPicker] = useState(false);
+
+  // Arriving from an essay ("Scan this essay") opens the scanner with that essay already loaded.
+  const essayParam = Number(params.get('essay')) || 0;
+  const { attach } = lib;
+  useEffect(() => {
+    if (!essayParam) return;
+    let live = true;
+    loadEssays().then((mod) => {
+      if (!live) return;
+      attach(mod);
+      const e = mod.ESSAY_BY_N[essayParam];
+      if (e) {
+        setText(essayPlainText(e));
+        setLoaded(essayParam);
+        setOpenPicker(true);
+      }
+    });
+    return () => {
+      live = false;
+    };
+  }, [essayParam, attach]);
+
+  function loadEssay(n: number) {
+    const e = lib.mod?.ESSAY_BY_N[n];
+    if (!e) return;
+    setText(essayPlainText(e));
+    setLoaded(n);
+    setNumberInput(String(n));
+    setActive(null);
+  }
+
+  function randomEssay() {
+    const all = lib.mod?.ESSAYS ?? [];
+    const pool = all.filter((e) => (!typeFilter || e.type === typeFilter) && e.n !== loaded);
+    if (pool.length) loadEssay(pool[Math.floor(Math.random() * pool.length)].n);
+  }
+
+  const loadedEssay = loaded && lib.mod ? lib.mod.ESSAY_BY_N[loaded] : null;
   const a = useMemo(() => analyze(text), [text]);
   const verdict = upgradeVerdict(a.distinctUpgrades);
   const cautions = useMemo(
@@ -46,6 +91,98 @@ export function SynScanner() {
         </p>
       </header>
 
+      <section className="rounded-2xl border border-line bg-surface p-4 shadow-sm">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 className="font-semibold">Scan a model essay</h2>
+            <p className="text-sm text-ink-soft">
+              See which plain words and upgrades appear in any of the 202 model essays, then compare with your own writing.
+            </p>
+          </div>
+          {!openPicker && (
+            <button
+              onClick={() => {
+                setOpenPicker(true);
+                lib.load();
+              }}
+              className="rounded-full bg-brand-500 px-4 py-2 text-sm font-semibold text-on-brand shadow-sm hover:bg-brand-600"
+            >
+              Choose an essay
+            </button>
+          )}
+        </div>
+        {openPicker && !lib.mod && <p className="mt-3 text-sm text-ink-soft">Loading the essays…</p>}
+        {openPicker && lib.mod && (
+          <div className="mt-3 flex flex-col gap-3">
+            <div className="flex flex-wrap items-end gap-2 text-sm">
+              <label className="flex flex-col gap-1">
+                <span className="text-xs font-semibold uppercase tracking-wide text-ink-soft">Essay number</span>
+                <input
+                  type="number"
+                  min={1}
+                  max={lib.mod.ESSAYS.length}
+                  value={numberInput}
+                  onChange={(e) => setNumberInput(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') loadEssay(Number(numberInput));
+                  }}
+                  placeholder="1–202"
+                  className="w-28 rounded-lg border border-line bg-surface px-3 py-2 outline-none focus:border-brand-500"
+                />
+              </label>
+              <button
+                onClick={() => loadEssay(Number(numberInput))}
+                disabled={!lib.mod.ESSAY_BY_N[Number(numberInput)]}
+                className="rounded-full bg-brand-500 px-4 py-2 font-semibold text-on-brand shadow-sm hover:bg-brand-600 disabled:opacity-40"
+              >
+                Load
+              </button>
+              <span className="px-1 text-ink-soft">or</span>
+              <select
+                value={typeFilter}
+                onChange={(e) => setTypeFilter(e.target.value)}
+                aria-label="Essay type for random essay"
+                className="rounded-lg border border-line bg-surface px-3 py-2 outline-none focus:border-brand-500"
+              >
+                <option value="">Any essay type</option>
+                {lib.mod.TYPES.map((t) => (
+                  <option key={t.key} value={t.key}>
+                    {t.label}
+                  </option>
+                ))}
+              </select>
+              <button onClick={randomEssay} className="rounded-full border border-line px-4 py-2 font-medium hover:border-brand-300">
+                🎲 Random essay
+              </button>
+            </div>
+            {loadedEssay && (
+              <div className="rounded-xl border-l-4 border-brand-500 bg-brand-50 p-3 text-sm">
+                <p className="flex flex-wrap items-center gap-x-3 gap-y-1">
+                  <strong>Essay {loadedEssay.n}</strong>
+                  <span className="text-ink-soft">{lib.mod.typeLabel(loadedEssay.type)}</span>
+                  <Link to={`/essays/${loadedEssay.n}`} className="font-medium text-brand-600 hover:underline">
+                    Read it →
+                  </Link>
+                  <span className="ml-auto flex gap-2">
+                    {loadedEssay.n > 1 && (
+                      <button onClick={() => loadEssay(loadedEssay.n - 1)} className="font-medium text-brand-600 hover:underline">
+                        ‹ Previous
+                      </button>
+                    )}
+                    {loadedEssay.n < lib.mod.ESSAYS.length && (
+                      <button onClick={() => loadEssay(loadedEssay.n + 1)} className="font-medium text-brand-600 hover:underline">
+                        Next ›
+                      </button>
+                    )}
+                  </span>
+                </p>
+                <p className="mt-1 italic leading-relaxed">{lib.mod.questionText(loadedEssay)}</p>
+              </div>
+            )}
+          </div>
+        )}
+      </section>
+
       <div className="flex flex-col gap-2">
         <textarea
           value={text}
@@ -56,11 +193,11 @@ export function SynScanner() {
           className="w-full resize-y rounded-xl border border-line bg-surface p-4 text-[16px] leading-relaxed outline-none focus:border-brand-500"
         />
         <div className="flex flex-wrap items-center gap-3 text-sm">
-          <button onClick={() => setText(SAMPLE)} className="rounded-full border border-line px-4 py-2 font-medium text-ink-soft hover:border-brand-300">
-            Try a sample
+          <button onClick={() => { setText(SAMPLE); setLoaded(null); }} className="rounded-full border border-line px-4 py-2 font-medium text-ink-soft hover:border-brand-300">
+            Try a plain sample
           </button>
           {text && (
-            <button onClick={() => { setText(''); setActive(null); }} className="font-medium text-rose-ink hover:underline">
+            <button onClick={() => { setText(''); setActive(null); setLoaded(null); }} className="font-medium text-rose-ink hover:underline">
               Clear
             </button>
           )}

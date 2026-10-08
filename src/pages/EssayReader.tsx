@@ -129,6 +129,13 @@ export function EssayReader() {
       </div>
 
       <div className="flex flex-wrap items-center gap-2 text-sm">
+        <Link
+          to={`/synonyms/scanner?essay=${n}`}
+          className="rounded-full border border-line bg-surface px-3 py-1.5 font-medium text-ink-soft hover:border-brand-300"
+          title="See which plain words and synonym upgrades this essay uses"
+        >
+          🔍 Scan vocabulary
+        </Link>
         <div className="flex items-center gap-1 rounded-full border border-line bg-surface p-1">
           <button
             onClick={() => es.setFontSize(es.state.fontSize - 1)}

@@ -145,13 +145,22 @@ export function allCards(): { id: string; word: SynWord; syn: Syn }[] {
 
 export type HitKind = 'basic' | 'upgrade';
 
+export interface Hit {
+  n: number;
+  /** For upgrades, the matched synonym. */
+  syn?: string;
+}
+
 export interface Segment {
   start: number;
   end: number;
   kind: HitKind;
+  /** The first word this span belongs to (used to open suggestions). */
   n: number;
-  /** For upgrades, the matched synonym. */
+  /** For upgrades, the first matched synonym. */
   syn?: string;
+  /** Every word this exact span counts for. One upgrade can serve several plain words, e.g. "essential". */
+  hits: Hit[];
 }
 
 /** Match a phrase as whole words, allowing light inflection on the last word (assist, assists, assisted…). */
@@ -228,7 +237,8 @@ const LIMIT_BY_FREQ = [3, 4, 5];
 
 export function analyze(text: string): Analysis {
   const words = (text.match(/[A-Za-z][A-Za-z'’-]*/g) ?? []).length;
-  const found: Segment[] = [];
+  // 1. Collect every detection, grouped by its exact span.
+  const bySpan = new Map<string, { start: number; end: number; basic: Hit[]; up: Hit[] }>();
   for (const d of getDetectors()) {
     d.re.lastIndex = 0;
     let m: RegExpExecArray | null;
@@ -237,25 +247,39 @@ export function analyze(text: string): Analysis {
         d.re.lastIndex++;
         continue;
       }
-      found.push({ start: m.index, end: m.index + m[0].length, kind: d.kind, n: d.n, syn: d.kind === 'upgrade' ? d.label : undefined });
+      const key = `${m.index}:${m.index + m[0].length}`;
+      const g = bySpan.get(key) ?? { start: m.index, end: m.index + m[0].length, basic: [], up: [] };
+      const list = d.kind === 'basic' ? g.basic : g.up;
+      const dup = list.some((h) => h.n === d.n && h.syn === (d.kind === 'upgrade' ? d.label : undefined));
+      if (!dup) list.push({ n: d.n, syn: d.kind === 'upgrade' ? d.label : undefined });
+      bySpan.set(key, g);
     }
   }
-  // Longest match wins where spans overlap ("the general populace" beats "general").
-  const byLength = [...found].sort((x, y) => y.end - y.start - (x.end - x.start) || x.start - y.start);
+  // 2. A word that is itself a plain word (society, individual…) counts as plain, not as an upgrade.
+  const spans: Segment[] = [...bySpan.values()].map((g) => {
+    const kind: HitKind = g.basic.length ? 'basic' : 'upgrade';
+    const hits = kind === 'basic' ? g.basic : g.up;
+    return { start: g.start, end: g.end, kind, n: hits[0].n, syn: hits[0].syn, hits };
+  });
+  // 3. Longest match wins where different spans overlap ("the general populace" beats "general").
+  const byLength = spans.sort((x, y) => y.end - y.start - (x.end - x.start) || x.start - y.start);
   const kept: Segment[] = [];
   for (const s of byLength) {
     if (!kept.some((k) => s.start < k.end && k.start < s.end)) kept.push(s);
   }
   const segments = kept.sort((x, y) => x.start - y.start);
+
   const basicCount = new Map<number, number>();
   const upCount = new Map<string, UpgradeHit>();
   for (const s of segments) {
-    if (s.kind === 'basic') basicCount.set(s.n, (basicCount.get(s.n) ?? 0) + 1);
-    else {
-      const key = `${s.n}|${s.syn}`;
-      const cur = upCount.get(key) ?? { n: s.n, syn: s.syn as string, count: 0 };
-      cur.count++;
-      upCount.set(key, cur);
+    for (const h of s.hits) {
+      if (s.kind === 'basic') basicCount.set(h.n, (basicCount.get(h.n) ?? 0) + 1);
+      else {
+        const key = `${h.n}|${h.syn}`;
+        const cur = upCount.get(key) ?? { n: h.n, syn: h.syn as string, count: 0 };
+        cur.count++;
+        upCount.set(key, cur);
+      }
     }
   }
   const basic: BasicHit[] = [...basicCount.entries()]
@@ -267,7 +291,7 @@ export function analyze(text: string): Analysis {
     segments,
     basic,
     upgrades,
-    distinctUpgrades: upgrades.length,
+    distinctUpgrades: new Set(upgrades.map((u) => u.syn)).size,
     overused: basic.filter((b) => b.count >= b.limit),
   };
 }
@@ -422,3 +446,61 @@ export function rewriteItems(scope: Scope = {}): RewriteItem[] {
 export const PROMPT_COUNT = PROMPTS.length;
 
 export const speakable = (text: string) => text.replace(/___/g, 'blank');
+
+/* ---------------------------------------------------------------- real usage in the model essays */
+
+export interface ModelExample {
+  /** Essay number. */
+  n: number;
+  sentence: string;
+  start: number;
+  end: number;
+}
+
+export interface ModelUsage {
+  syn: string;
+  /** How many of the essays use it at least once. */
+  essays: number;
+  examples: ModelExample[];
+}
+
+const SENTENCE_SPLIT = /(?<=[.!?])\s+(?=[A-Z‘“"'])/;
+
+/**
+ * Finds real sentences in the model essays that use each upgrade of a word, so learners see the word
+ * in natural, exam-style writing. Examples favour shorter sentences from different essays.
+ */
+export function modelUsage(essays: { n: number; body: string[] }[], wordN: number): ModelUsage[] {
+  const word = WORD_BY_N[wordN];
+  const tests = word.syns.map((s) => {
+    const patterns = synPatterns(s.w).map((p) => new RegExp(`(?<![A-Za-z-])(?:${p})(?![A-Za-z-])`, 'i'));
+    return { syn: s.w, patterns, found: [] as ModelExample[], essays: new Set<number>() };
+  });
+  for (const e of essays) {
+    for (const para of e.body) {
+      const clean = para.replace(/\*\*/g, '');
+      for (const sentence of clean.split(SENTENCE_SPLIT)) {
+        for (const t of tests) {
+          for (const re of t.patterns) {
+            const m = re.exec(sentence);
+            if (m) {
+              t.essays.add(e.n);
+              t.found.push({ n: e.n, sentence, start: m.index, end: m.index + m[0].length });
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+  return tests.map((t) => {
+    const seen = new Set<number>();
+    const examples = t.found
+      .filter((f) => f.sentence.split(/\s+/).length <= 45)
+      .sort((a, b) => a.sentence.length - b.sentence.length)
+      .filter((f) => (seen.has(f.n) ? false : (seen.add(f.n), true)))
+      .slice(0, 3)
+      .sort((a, b) => a.n - b.n);
+    return { syn: t.syn, essays: t.essays.size, examples };
+  });
+}
