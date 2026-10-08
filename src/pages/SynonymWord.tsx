@@ -182,7 +182,7 @@ function WordView({ n }: { n: number }) {
             </button>
           ))}
         </div>
-        <p className="mt-2 text-xs text-ink-soft">Tap an upgrade to see the same idea with that word.</p>
+        <p className="mt-2 text-xs text-ink-soft">Tap an upgrade to see it in a sentence. Each example is written to be natural, so the sentences may differ slightly.</p>
       </section>
 
       <section className="flex flex-col gap-3">

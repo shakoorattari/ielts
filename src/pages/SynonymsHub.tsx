@@ -52,8 +52,9 @@ export function SynonymsHub() {
         <p className="text-xs font-semibold uppercase tracking-wide text-brand-600">Vocabulary</p>
         <h1 className="mt-1 text-2xl font-bold tracking-tight sm:text-3xl">50 synonym upgrades</h1>
         <p className="mt-2 max-w-3xl text-ink-soft">
-          Replace the plain words that appear in almost every essay (people, important, good…) with precise ones that
-          examiners reward. Learn each in context, practise it five ways, then test yourself under exam pressure.
+          Replace the plain words that appear in almost every essay (people, important, good…) with precise, natural
+          ones that show the range and accuracy IELTS looks for. Learn each in context, practise it several ways, then
+          test yourself under exam pressure.
         </p>
         <div className="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
           <Stat label="Words learned" value={`${learnedCount}/${TOTAL_WORDS}`} tone="text-mint-ink" />
@@ -110,6 +111,33 @@ export function SynonymsHub() {
             cta={{ to: '/synonyms/scanner', label: 'Scan an essay' }}
           />
         </ol>
+      </section>
+
+      <section className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
+        <h2 className="text-lg font-semibold">How IELTS marks vocabulary</h2>
+        <ul className="mt-3 flex list-disc flex-col gap-2 pl-5 text-sm text-ink-soft">
+          <li>
+            <strong className="text-ink">Lexical Resource</strong> is one of four equally weighted Writing criteria, so it
+            is a quarter of your Writing band. Speaking is also marked on it.
+          </li>
+          <li>
+            Examiners look at <strong className="text-ink">range, precision, natural collocation and style, and accurate
+            spelling and word formation</strong>. A less common word only helps if you use it correctly. A forced or
+            wrong word costs more than a plain word used well.
+          </li>
+          <li>
+            IELTS does not count “advanced words” or check a list. The “two to five upgrades per essay” figure is the
+            guide’s rule of thumb, not an official limit.
+          </li>
+          <li>
+            British and American spelling are both accepted. Pick one and stay consistent. This site uses British
+            spelling.
+          </li>
+          <li>
+            This site is an independent study aid, not affiliated with IELTS, IDP, the British Council or Cambridge.
+            Check the official public band descriptors on ielts.org.
+          </li>
+        </ul>
       </section>
 
       <section>

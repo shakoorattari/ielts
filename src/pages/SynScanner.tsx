@@ -42,7 +42,7 @@ export function SynScanner() {
         <h1 className="mt-2 text-2xl font-bold tracking-tight">Essay scanner</h1>
         <p className="mt-1 text-ink-soft">
           Paste a paragraph or a whole essay. The scanner marks the plain words from the guide, shows how often you repeat
-          them, and suggests upgrades that fit. Your text never leaves your browser.
+          them, and suggests upgrades that fit. Your text never leaves your browser. The upgrade count is a guide, not an IELTS score.
         </p>
       </header>
 

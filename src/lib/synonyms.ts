@@ -279,14 +279,14 @@ export function upgradedWords(text: string): Set<number> {
 
 export function upgradeVerdict(distinct: number): { tone: 'none' | 'start' | 'good' | 'many' | 'too-many'; label: string; detail: string } {
   if (distinct === 0)
-    return { tone: 'none', label: 'No upgrades yet', detail: 'Swap a few plain words for precise ones. Start with the words you know best.' };
+    return { tone: 'none', label: 'No upgrades yet', detail: 'Swap a few plain words for precise ones. Start with the words you know best. Plain words used correctly are never penalised.' };
   if (distinct === 1)
-    return { tone: 'start', label: 'A good start', detail: 'One natural upgrade is fine. Aim for two to five in an essay.' };
+    return { tone: 'start', label: 'A good start', detail: 'One natural upgrade is fine. The guide suggests two to five per essay.' };
   if (distinct <= 5)
-    return { tone: 'good', label: 'Sweet spot', detail: 'Two to five upgrades used naturally is exactly what the guide recommends.' };
+    return { tone: 'good', label: 'In the guide’s sweet spot', detail: 'Two to five upgrades used naturally is the guide’s rule of thumb. IELTS itself doesn’t count them, so accuracy matters more than the number.' };
   if (distinct <= 10)
-    return { tone: 'many', label: 'Plenty. Check they sound natural', detail: 'Up to ten is the ceiling. Read it aloud and drop any that feel forced.' };
-  return { tone: 'too-many', label: 'Too many', detail: 'Stuffing an essay with advanced words sounds unnatural. Keep the ones you are 100% sure about.' };
+    return { tone: 'many', label: 'Plenty. Check they sound natural', detail: 'The guide’s ceiling is about ten. Read it aloud and drop any that feel forced or that you are not 100% sure of.' };
+  return { tone: 'too-many', label: 'Too many', detail: 'Stuffing an essay with advanced words sounds unnatural, and every extra one is another chance for a word-choice error. Keep the ones you are 100% sure about.' };
 }
 
 /* ---------------------------------------------------------------- questions */
