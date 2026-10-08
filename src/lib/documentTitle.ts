@@ -16,13 +16,21 @@ const TITLES: Record<string, string> = {
   '/quiz': 'Quick quiz',
   '/writing': 'Writing practice',
   '/history': 'History',
+  '/synonyms': '50 synonym upgrades',
+  '/synonyms/flashcards': 'Synonym flashcards',
+  '/synonyms/quiz': 'Synonym quiz',
+  '/synonyms/type': 'Type the synonym',
+  '/synonyms/rewrite': 'Rewrite with synonyms',
+  '/synonyms/scanner': 'Essay vocabulary scanner',
+  '/synonyms/timed': 'Timed writing test',
+  '/synonyms/cheatsheet': 'Synonym cheat sheet',
   '/settings': 'Settings',
 };
 
 export function useRouteTitle() {
   const { pathname } = useLocation();
   useEffect(() => {
-    if (pathname.startsWith('/essays/')) return; // EssayReader owns this one
+    if (pathname.startsWith('/essays/') || pathname.startsWith('/synonyms/word/')) return; // those pages set their own
     const name = TITLES[pathname];
     document.title = name ? name + SUFFIX : APP_TITLE;
   }, [pathname]);
