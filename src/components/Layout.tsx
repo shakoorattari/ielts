@@ -268,6 +268,27 @@ export function Layout() {
         </a>
         . Your progress is saved only in this browser. An independent study tool, not affiliated with or endorsed by the
         organisations that own the IELTS test.
+        <span className="mt-2 block">
+          Found a mistake, or something that doesn’t work? Please let me know through{' '}
+          <a
+            href="https://shakoorattari.com/"
+            target="_blank"
+            rel="noreferrer"
+            className="font-medium text-brand-700 underline underline-offset-2"
+          >
+            shakoorattari.com
+          </a>{' '}
+          or{' '}
+          <a
+            href="https://github.com/shakoorattari/ielts/issues/new"
+            target="_blank"
+            rel="noreferrer"
+            className="font-medium text-brand-700 underline underline-offset-2"
+          >
+            report it on GitHub
+          </a>
+          . Corrections are welcome.
+        </span>
       </footer>
     </div>
   );
