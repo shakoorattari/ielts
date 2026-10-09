@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { describeAiError, useChromeAi, type NoApiHint } from '../lib/chromeAi';
+import { describeAiError, isMobileDevice, useChromeAi, type NoApiHint } from '../lib/chromeAi';
 import { useAiMode } from '../lib/aiEngine';
 import { AiCloudSetup } from './AiCloudSetup';
 import {
@@ -91,6 +91,9 @@ export function AiGate({ children, inline = false, showLabel = true }: { childre
         )}
       </>
     );
+  } else if (state.kind === 'unavailable' && isMobileDevice()) {
+    // Android Chrome can report the API as "unavailable". Say the true reason and lead with the key option.
+    body = <p>{NO_API.mobile}</p>;
   } else if (state.kind === 'unavailable') {
     body = (
       <p>
@@ -134,7 +137,7 @@ export function AiGate({ children, inline = false, showLabel = true }: { childre
       {showLabel && <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-brand-600">✨ AI coach (beta)</p>}
       {body}
       {state.kind !== 'downloading' && (
-        <AiCloudSetup defaultOpen={state.kind === 'no-api' && state.hint === 'mobile'} />
+        <AiCloudSetup defaultOpen={(state.kind === 'no-api' && state.hint === 'mobile') || (state.kind === 'unavailable' && isMobileDevice())} />
       )}
     </div>
   );

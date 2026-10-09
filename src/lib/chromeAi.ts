@@ -63,10 +63,15 @@ const subscribe = (l: () => void) => {
   return () => listeners.delete(l);
 };
 
-function noApiHint(): NoApiHint {
+/** True on phones and tablets, which cannot run Chrome's on-device AI even when the browser reports an API. */
+export function isMobileDevice(): boolean {
   const nav = navigator as Navigator & { userAgentData?: { mobile?: boolean } };
+  return nav.userAgentData?.mobile ?? /Android|iPhone|iPad|iPod|CriOS/i.test(navigator.userAgent);
+}
+
+function noApiHint(): NoApiHint {
   const ua = navigator.userAgent;
-  if (nav.userAgentData?.mobile ?? /Android|iPhone|iPad|iPod|CriOS/i.test(ua)) return 'mobile';
+  if (isMobileDevice()) return 'mobile';
   // Chrome, Edge, Brave and Opera all carry "Chrome/<version>". Firefox and Safari don't.
   return /Chrome\/\d+/.test(ua) ? 'old-chrome' : 'other-browser';
 }
