@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { describeAiError, useChromeAi, type NoApiHint } from '../lib/chromeAi';
+import { useAiMode } from '../lib/aiEngine';
+import { AiCloudSetup } from './AiCloudSetup';
 import {
   explainDifferences,
   newExamples,
@@ -18,13 +20,23 @@ const CHROME_URL = 'https://www.google.com/chrome/';
 const ON_DEVICE = 'Runs on your own computer through Chrome’s built-in AI, so your writing is not sent to this site or to any server.';
 const CAUTION = 'AI suggestions can be wrong. Check anything you are unsure about with a teacher.';
 
+/** The accurate privacy sentence for whichever engine is running. */
+function PrivacyNote() {
+  const { mode, provider } = useAiMode();
+  return mode === 'cloud' ? (
+    <>Your writing is sent to {provider} (using your own key) to get this feedback. This site does not store it.</>
+  ) : (
+    <>{ON_DEVICE}</>
+  );
+}
+
 /* ------------------------------------------------------------------ the gate */
 
 const NO_API: Record<NoApiHint, string> = {
   mobile:
-    'AI feedback needs Google Chrome on a computer (Windows, Mac or Linux). Phones and tablets can’t run it yet. Everything else on this site works on your phone.',
+    'Chrome’s private on-device AI needs a computer (Windows, Mac or Linux), so it can’t run on phones and tablets yet. You can still get AI feedback here with your own free AI key, or open this page in Chrome on a computer.',
   'other-browser':
-    'Want AI feedback? Open this page in Google Chrome on a computer. Chrome can run an AI on your own device, so your writing stays private. Other browsers don’t offer this yet.',
+    'Want AI feedback that stays private? Open this page in Google Chrome on a computer: Chrome can run an AI on your own device. Or use your own free AI key below, which works in any browser.',
   'old-chrome':
     'This browser doesn’t offer Chrome’s built-in AI yet. Update Chrome to the latest version (148 or newer) and reload, or open this page in Google Chrome on a computer.',
 };
@@ -35,10 +47,12 @@ const NO_API: Record<NoApiHint, string> = {
  */
 export function AiGate({ children, inline = false, showLabel = true }: { children: () => React.ReactNode; inline?: boolean; showLabel?: boolean }) {
   const { state, enable } = useChromeAi();
+  const { mode } = useAiMode();
   const [copied, setCopied] = useState(false);
 
+  // On-device AI wins when Chrome can run it; otherwise a learner's own free key works on any device.
+  if (mode !== 'none') return <>{children()}</>;
   if (state.kind === 'checking') return null;
-  if (state.kind === 'ready') return <>{children()}</>;
 
   const wrap = inline
     ? 'mt-3 rounded-lg border border-dashed border-line bg-canvas p-3 text-sm text-ink-soft'
@@ -81,7 +95,7 @@ export function AiGate({ children, inline = false, showLabel = true }: { childre
     body = (
       <p>
         Chrome’s built-in AI can’t run on this computer. It needs a recent Windows, Mac or Linux machine with about 22 GB of free
-        disk space and enough memory. The rest of the site works fully.
+        disk space and enough memory. You can still use your own free AI key below. The rest of the site works fully.
       </p>
     );
   } else if (state.kind === 'downloadable') {
@@ -101,7 +115,7 @@ export function AiGate({ children, inline = false, showLabel = true }: { childre
         </button>
       </>
     );
-  } else {
+  } else if (state.kind === 'downloading') {
     const pct = state.progress === null ? null : Math.round(state.progress * 100);
     body = (
       <div role="status">
@@ -111,19 +125,24 @@ export function AiGate({ children, inline = false, showLabel = true }: { childre
         </div>
       </div>
     );
+  } else {
+    return null; // ready: handled above
   }
 
   return (
     <div className={wrap}>
       {showLabel && <p className="mb-1 text-xs font-semibold uppercase tracking-wide text-brand-600">✨ AI coach (beta)</p>}
       {body}
+      {state.kind !== 'downloading' && (
+        <AiCloudSetup defaultOpen={state.kind === 'no-api' && state.hint === 'mobile'} />
+      )}
     </div>
   );
 }
 
 /** A banner for the synonyms home: always explains what the AI coach is and what this browser can do. */
 export function AiStatusBanner() {
-  const { state } = useChromeAi();
+  const { mode, provider } = useAiMode();
   return (
     <section className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
       <h2 className="text-lg font-semibold">✨ AI coach (beta)</h2>
@@ -131,11 +150,20 @@ export function AiStatusBanner() {
         Get feedback on your own sentences and essays: is the word natural, and what would be stronger? You’ll see ✨ buttons on the
         rewrite drill, the essay scanner, the timed test and each word page.
       </p>
-      {state.kind === 'ready' ? (
+      {mode === 'on-device' && (
         <p className="mt-3 rounded-lg bg-mint-100 px-3 py-2 text-sm text-mint-ink" role="status">
           On and ready in this browser. {ON_DEVICE}
         </p>
-      ) : (
+      )}
+      {mode === 'cloud' && (
+        <div className="mt-3">
+          <p className="rounded-lg bg-mint-100 px-3 py-2 text-sm text-mint-ink" role="status">
+            On, using your own {provider} key. Your writing is sent to {provider} when you press a ✨ button.
+          </p>
+          <AiCloudSetup />
+        </div>
+      )}
+      {mode === 'none' && (
         <div className="mt-3">
           <AiGate inline showLabel={false}>
             {() => null}
@@ -231,7 +259,7 @@ function SentenceBody({ plain, base, word, learner }: { plain: string; base: str
             {r.better}
           </p>
           <p className="text-xs text-ink-soft">
-            {CAUTION} {ON_DEVICE}
+            {CAUTION} <PrivacyNote />
           </p>
         </div>
       )}
@@ -258,7 +286,7 @@ function TextBody({ text, label }: { text: string; label: string }) {
       <h2 className="font-semibold">✨ AI vocabulary feedback (beta)</h2>
       <p className="mt-1 text-sm text-ink-soft">
         The coach reads your writing and points out word choices that sound unnatural, too informal or repetitive. It checks
-        vocabulary only, not grammar, and never gives a band score. {ON_DEVICE}
+        vocabulary only, not grammar, and never gives a band score. <PrivacyNote />
       </p>
       <div className="mt-3">
         <AskButton loading={task.status === 'loading'} disabled={words < 8} onClick={() => task.run((signal) => reviewText(text, signal))}>
@@ -339,7 +367,7 @@ function WordBody({ word }: { word: SynWord }) {
     <section className="rounded-2xl border border-line bg-surface p-4 shadow-sm sm:p-5">
       <h2 className="text-lg font-semibold">✨ AI coach (beta)</h2>
       <p className="mt-1 text-sm text-ink-soft">
-        Ask for fresh example sentences on a topic you choose, or a short explanation of when to pick each upgrade. {ON_DEVICE}
+        Ask for fresh example sentences on a topic you choose, or a short explanation of when to pick each upgrade. <PrivacyNote />
       </p>
 
       <div className="mt-4 flex flex-col gap-3">

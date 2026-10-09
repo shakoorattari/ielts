@@ -109,6 +109,8 @@ export async function enableAi(): Promise<void> {
   }
 }
 
+export const getOnDeviceState = () => state;
+
 export function useChromeAi() {
   const s = useSyncExternalStore(subscribe, () => state);
   useEffect(() => {
@@ -135,8 +137,17 @@ function baseSession(key: string, system: string): Promise<LanguageModelSession>
 }
 
 export function describeAiError(e: unknown): string {
-  const err = e as { name?: string; message?: string };
+  const err = e as { name?: string; message?: string; status?: number };
   if (err?.name === 'AbortError') return 'Cancelled.';
+  if (err?.name === 'CloudHttpError') {
+    const s = err.status ?? 0;
+    if (s === 401 || s === 403) return 'The AI provider rejected your key. Check that you copied all of it, then try again.';
+    if (s === 404) return 'The AI provider could not find that model. Open the AI coach settings and pick another model.';
+    if (s === 429) return 'You have reached the free limit for your key. Wait a minute and try again.';
+    if (s >= 500) return 'The AI provider had a problem. Please try again shortly.';
+    return `The AI provider said no (${s}${err.message ? `: ${err.message}` : ''}).`;
+  }
+  if (err?.name === 'TypeError') return 'Could not reach the AI provider. Check your connection (some school or work networks block it).';
   if (err?.name === 'QuotaExceededError') return 'That text is too long for the on-device AI. Try a shorter piece.';
   if (err?.name === 'NotSupportedError') return 'This browser’s AI does not support that request.';
   if (err?.name === 'NotAllowedError') return 'Chrome needs a click before it can start the AI. Press the button again.';
@@ -144,7 +155,7 @@ export function describeAiError(e: unknown): string {
   return err?.message ? `The AI coach could not finish: ${err.message}` : 'The AI coach could not finish. Please try again.';
 }
 
-function parseJson<T>(raw: string): T {
+export function parseJson<T>(raw: string): T {
   try {
     return JSON.parse(raw) as T;
   } catch {
@@ -155,7 +166,7 @@ function parseJson<T>(raw: string): T {
 }
 
 /** Asks the on-device model a question and gets back JSON that matches `schema`. */
-export async function askJson<T>(opts: { key: string; system: string; prompt: string; schema: object; signal?: AbortSignal }): Promise<T> {
+export async function askOnDevice<T>(opts: { key: string; system: string; prompt: string; schema: object; signal?: AbortSignal }): Promise<T> {
   try {
     const base = await baseSession(opts.key, opts.system);
     const session = await base.clone({ signal: opts.signal });
