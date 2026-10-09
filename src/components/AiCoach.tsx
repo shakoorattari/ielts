@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { describeAiError, isMobileDevice, useChromeAi, type NoApiHint } from '../lib/chromeAi';
+import { browserKind, describeAiError, isMobileDevice, useChromeAi, type NoApiHint } from '../lib/chromeAi';
 import { useAiMode } from '../lib/aiEngine';
 import { AiCloudSetup } from './AiCloudSetup';
 import {
@@ -17,7 +17,10 @@ import {
 import { TOPIC_KEYS, TOPIC_LABEL, type SynWord } from '../lib/synonyms';
 
 const CHROME_URL = 'https://www.google.com/chrome/';
-const ON_DEVICE = 'Runs on your own computer through Chrome’s built-in AI, so your writing is not sent to this site or to any server.';
+const ON_DEVICE = 'Runs on your own computer through your browser’s built-in AI, so your writing is not sent to this site or to any server.';
+
+/** The name to use in messages: Edge users shouldn’t be told about Chrome. */
+const browserName = () => (browserKind() === 'edge' ? 'Edge' : 'Chrome');
 const CAUTION = 'AI suggestions can be wrong. Check anything you are unsure about with a teacher.';
 
 /** The accurate privacy sentence for whichever engine is running. */
@@ -37,9 +40,33 @@ const NO_API: Record<NoApiHint, string> = {
     'Chrome’s private on-device AI needs a computer (Windows, Mac or Linux), so it can’t run on phones and tablets yet. You can still get AI feedback here with your own free AI key, or open this page in Chrome on a computer.',
   'other-browser':
     'Want AI feedback that stays private? Open this page in Google Chrome on a computer: Chrome can run an AI on your own device. Or use your own free AI key below, which works in any browser.',
+  edge:
+    'Microsoft Edge’s private on-device AI is still a developer preview. It only exists in Edge Canary and Edge Dev, behind a setting, so regular Edge doesn’t have it yet. Open this page in Google Chrome on a computer for the private on-device AI, or use your own free AI key below, which works in Edge too.',
+  'chromium-other':
+    'This browser doesn’t offer a built-in AI yet. Open this page in Google Chrome on a computer for the private on-device AI, or use your own free AI key below, which works in any browser.',
   'old-chrome':
     'This browser doesn’t offer Chrome’s built-in AI yet. Update Chrome to the latest version (148 or newer) and reload, or open this page in Google Chrome on a computer.',
 };
+
+/** Edge Canary and Dev can run the same on-device AI once a flag is switched on. */
+function EdgePreviewSteps() {
+  return (
+    <details className="mt-3 rounded-lg border border-line bg-surface p-3">
+      <summary className="cursor-pointer font-semibold text-brand-700">Using Edge Canary or Edge Dev? Turn on the preview</summary>
+      <ol className="mt-2 list-decimal pl-5">
+        <li>
+          Open a new tab and go to <code className="rounded bg-canvas px-1">edge://flags</code>.
+        </li>
+        <li>Search for “Prompt API for on-device language model” and set it to Enabled.</li>
+        <li>Restart Edge, then come back to this page and press “Turn on the AI coach”.</li>
+      </ol>
+      <p className="mt-2 text-xs">
+        Needs Windows 10 or 11, or macOS 13.3 or later, about 20 GB of free disk space, and a graphics card with at least 5.5 GB of
+        memory. It is a developer preview, so it may change.
+      </p>
+    </details>
+  );
+}
 
 /**
  * Shows the AI coach when Chrome can run it, and otherwise explains why not and what to do (open Chrome,
@@ -63,6 +90,7 @@ export function AiGate({ children, inline = false, showLabel = true }: { childre
     body = (
       <>
         <p>{NO_API[state.hint]}</p>
+        {state.hint === 'edge' && <EdgePreviewSteps />}
         {state.hint !== 'mobile' && (
           <div className="mt-2 flex flex-wrap gap-2">
             <a
@@ -97,16 +125,17 @@ export function AiGate({ children, inline = false, showLabel = true }: { childre
   } else if (state.kind === 'unavailable') {
     body = (
       <p>
-        Chrome’s built-in AI can’t run on this computer. It needs a recent Windows, Mac or Linux machine with about 22 GB of free
-        disk space and enough memory. You can still use your own free AI key below. The rest of the site works fully.
+        {browserName()}’s built-in AI can’t run on this computer. It needs a recent Windows or Mac (or Linux in Chrome) with about 20 GB
+        of free disk space and a capable graphics card or enough memory. You can still use your own free AI key below. The rest of
+        the site works fully.
       </p>
     );
   } else if (state.kind === 'downloadable') {
     body = (
       <>
         <p>
-          Turn on the AI coach. Chrome will download its on-device AI model once (several gigabytes, and it needs about 22 GB of free
-          disk space). {ON_DEVICE}
+          Turn on the AI coach. {browserName()} will download its on-device AI model once (several gigabytes, and it needs about 20 GB
+          of free disk space). {ON_DEVICE}
         </p>
         {state.error && <p className="mt-2 text-rose-ink">{state.error}</p>}
         <button
@@ -122,7 +151,7 @@ export function AiGate({ children, inline = false, showLabel = true }: { childre
     const pct = state.progress === null ? null : Math.round(state.progress * 100);
     body = (
       <div role="status">
-        <p>Chrome is downloading the AI model{pct === null ? '…' : `: ${pct}%`}. You can keep using the site meanwhile.</p>
+        <p>{browserName()} is downloading the AI model{pct === null ? '…' : `: ${pct}%`}. You can keep using the site meanwhile.</p>
         <div className="mt-2 h-2 overflow-hidden rounded-full bg-brand-50">
           <div className="h-full rounded-full bg-brand-500 transition-all" style={{ width: `${pct ?? 5}%` }} />
         </div>
