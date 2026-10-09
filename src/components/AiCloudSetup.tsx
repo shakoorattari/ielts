@@ -110,12 +110,22 @@ export function AiCloudSetup({ defaultOpen = false }: { defaultOpen?: boolean })
         </label>
 
         {info.keyUrl && (
-          <p>
-            <a href={info.keyUrl} target="_blank" rel="noreferrer" className="font-semibold text-brand-600 underline underline-offset-2">
-              Get a free {info.label} key
-            </a>{' '}
-            <span className="text-ink-soft">(sign in, create an API key, copy it, then come back and paste it below)</span>
-          </p>
+          <div>
+            <a
+              href={info.keyUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-block rounded-full border border-line px-3 py-1.5 font-semibold text-brand-700 hover:border-brand-300"
+            >
+              1. Get a free {info.label} key ↗
+            </a>
+            <ol className="mt-2 list-decimal pl-5 text-ink-soft">
+              <li>The link opens in a new tab. Sign in (a Google account works).</li>
+              <li>Tap “Create API key”, then copy the key it shows you.</li>
+              <li>Come back to this tab, paste the key below and tick the box.</li>
+              <li>Press “Save and test”. After that, every ✨ button works.</li>
+            </ol>
+          </div>
         )}
 
         {custom && (
