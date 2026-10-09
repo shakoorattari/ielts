@@ -2,6 +2,8 @@ import { useRef, useState } from 'react';
 import { useProgress } from '../lib/progressContext';
 import { useCloudSync } from '../lib/cloudSyncContext';
 import { ALL_ITEMS } from '../lib/collocations';
+import { AiCloudSetup } from '../components/AiCloudSetup';
+import { useAiMode } from '../lib/aiEngine';
 
 function formatSyncTime(ms: number | null): string {
   if (!ms) return 'never';
@@ -15,6 +17,7 @@ function formatSyncTime(ms: number | null): string {
 export function Settings() {
   const { exportJSON, importJSON, resetProgress, statusCounts, state } = useProgress();
   const sync = useCloudSync();
+  const ai = useAiMode();
   const fileInput = useRef<HTMLInputElement>(null);
   const [confirmReset, setConfirmReset] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
@@ -101,6 +104,19 @@ export function Settings() {
           />
         </div>
         {message && <p className="mt-2 text-sm text-brand-600">{message}</p>}
+      </section>
+
+      <section className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
+        <h2 className="font-semibold">AI coach</h2>
+        <p className="mt-1 text-sm text-ink-soft">
+          {ai.mode === 'on-device' &&
+            'Using Chrome’s built-in AI on this computer. Your writing is not sent anywhere.'}
+          {ai.mode === 'cloud' &&
+            `Using your own ${ai.provider} key. Your writing is sent to ${ai.provider} when you press a ✨ button.`}
+          {ai.mode === 'none' &&
+            'Not set up. In Chrome on a computer you can turn on the private on-device AI from the Synonyms page. On any other device you can use your own free AI key here.'}
+        </p>
+        <AiCloudSetup />
       </section>
 
       <section className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
