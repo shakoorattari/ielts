@@ -31,7 +31,8 @@ optional opt-in sync to keep it consistent across devices (see below).
   Practise five ways: spaced-repetition **flashcards**, a **quiz** (upgrade the word, match the
   meaning, tricky context questions), **type it** recall, **rewrite** drills (sentences and
   paragraphs), and an **essay scanner** that marks overused plain words and suggests upgrades. A
-  **timed test** uses real essay questions with your target words tracked live, and a printable
+  **AI coach** (beta, Chrome only) gives feedback on your own sentences and writing using Chrome's
+  built-in on-device AI; **timed test** uses real essay questions with your target words tracked live, and a printable
   **cheat sheet** saves as a PDF. The 202 model essays feed several of these: the scanner can load
   any essay (or open from a "Scan vocabulary" button on each essay), each word page shows real
   sentences from the essays that use its upgrades (or says when none do), and the rewrite drill
@@ -94,6 +95,24 @@ learned words, your starting five, own sentences, timed tests) lives in `localSt
 (`ielts-synonyms:v1`) and is not part of the Gist sync. The word list and notes are adapted from the
 "50 Synonyms That Actually Boost Your Score" guide by IELTS Advantage and credited in the app and in
 `index.html`. The YouTube embeds use `youtube-nocookie.com` and load only after the visitor presses play.
+
+## AI coach (Chrome's built-in AI)
+
+The ✨ buttons on the rewrite drill, scanner, timed test and word pages use the browser's
+[Prompt API](https://developer.chrome.com/docs/ai/prompt-api) (`LanguageModel`), which runs a small model
+on the learner's own computer. Nothing is sent to this site or to any server, there is no API key and it
+costs nothing. Chrome downloads the model itself, once, after the learner clicks "Turn on the AI coach"
+(desktop Windows/Mac/Linux, about 22 GB free disk). Everything is feature-detected: other browsers, phones
+and computers that can't run it get a plain explanation (and a suggestion to open the page in Chrome),
+and the rest of the site is unaffected.
+
+- `src/lib/chromeAi.ts`: detection, the one-time download, and a JSON-constrained prompt helper.
+- `src/lib/aiCoach.ts`: the four tasks (review a sentence, review a paragraph, new example sentences,
+  when-to-use-which). Each asks for a fixed JSON shape and validates the answer before it is shown (a quoted
+  "problem" must appear in the learner's text; an example must contain the upgrade it claims).
+- `src/components/AiCoach.tsx`: the gate (browser / device / download states) and the panels.
+
+The coach judges vocabulary only and never gives a band score. The small model can be wrong, and the UI says so.
 
 ## Getting started
 
@@ -179,6 +198,8 @@ src/
     synState.ts            localStorage store for synonym cards, my words, sentences, timed tests
     useSynScope.ts         ?set=my / ?topic= / ?word= scope shared by every synonym practice mode
     essayLibrary.ts        on-demand loader for the essay text, used by the synonym pages
+    chromeAi.ts            Chrome built-in AI: detection, one-time download, JSON prompts
+    aiCoach.ts             the AI coach's tasks, prompts and answer validation
   components/               shared UI (nav layout)
   pages/                    one file per route
 scripts/

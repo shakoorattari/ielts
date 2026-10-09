@@ -2,6 +2,7 @@ import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SynonymCredit } from '../components/SynonymCredit';
 import { VideoEmbed } from '../components/VideoEmbed';
+import { AiStatusBanner } from '../components/AiCoach';
 import { TOPIC_KEYS, TOPIC_LABEL, WORDS } from '../lib/synonyms';
 import { MY_LIST_MAX, TOTAL_WORDS, WORD_STAGES, dueCardCount, stageCount, stagesFor, useSynState } from '../lib/synState';
 
@@ -139,6 +140,8 @@ export function SynonymsHub() {
           </li>
         </ul>
       </section>
+
+      <AiStatusBanner />
 
       <section>
         <h2 className="text-lg font-semibold">Ways to practise</h2>

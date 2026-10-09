@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { HighlightedText } from '../components/HighlightedText';
+import { AiTextReview } from '../components/AiCoach';
 import { PROMPTS, WORDS, WORD_BY_N, analyze, pick, upgradeVerdict, type EssayPrompt } from '../lib/synonyms';
 import { MY_LIST_MAX, useSynState } from '../lib/synState';
 
@@ -267,6 +268,8 @@ function Writing({
             <HighlightedText text={text} segments={a.segments} />
           </p>
         </section>
+
+        <AiTextReview text={text} label="Get AI feedback on my writing" />
 
         <div className="flex flex-wrap gap-2 text-sm">
           <button onClick={onExit} className="rounded-full bg-brand-500 px-4 py-2 font-semibold text-on-brand">

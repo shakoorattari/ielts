@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { SynScopePicker } from '../components/SynScopePicker';
 import { HighlightedText } from '../components/HighlightedText';
+import { AiSentenceReview, AiTextReview } from '../components/AiCoach';
 import {
   PARAGRAPHS,
   WORD_BY_N,
@@ -223,6 +224,7 @@ function SentenceRunner({ onDone }: { onDone: () => void }) {
               <li key={o}>{modelSentence(item, o)}</li>
             ))}
           </ul>
+          <AiSentenceReview plain={item.plain} base={item.base} word={word} learner={text} />
           <button onClick={next} className="mt-3 rounded-full bg-brand-500 px-5 py-2 text-sm font-semibold text-on-brand shadow-sm hover:bg-brand-600">
             {i + 1 === items.length ? 'See results' : 'Next sentence'}
           </button>
@@ -370,6 +372,7 @@ function ParagraphTask({
           )}
         </div>
       )}
+      <AiTextReview text={text} label="Get AI feedback on my paragraph" />
       {showModel && task.model && (
         <div className="rounded-xl bg-mint-100 p-4 text-sm text-mint-ink">
           <p className="font-semibold">One possible upgrade</p>
