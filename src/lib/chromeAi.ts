@@ -9,7 +9,7 @@ import { useEffect, useSyncExternalStore } from 'react';
 type Availability = 'unavailable' | 'downloadable' | 'downloading' | 'available';
 
 interface DownloadMonitor {
-  addEventListener(type: 'downloadprogress', listener: (e: { loaded: number }) => void): void;
+  addEventListener(type: 'downloadprogress', listener: (e: { loaded: number; total?: number }) => void): void;
 }
 
 interface CreateOptions {
@@ -33,12 +33,19 @@ interface LanguageModelStatic {
 
 const api = (): LanguageModelStatic | undefined => (globalThis as unknown as { LanguageModel?: LanguageModelStatic }).LanguageModel;
 
-const OPTS = {
+const LANGUAGE_OPTS = {
   expectedInputs: [{ type: 'text' as const, languages: ['en'] }],
   expectedOutputs: [{ type: 'text' as const, languages: ['en'] }],
 };
 
-export type NoApiHint = 'mobile' | 'other-browser' | 'old-chrome';
+/**
+ * The options every create() call uses. Declaring English is the standard way, but a browser that doesn't recognise
+ * the hints (Edge's preview builds document the plain, option-free form) would report "unavailable", so detection
+ * falls back to no options and everything after it uses whichever form worked.
+ */
+let OPTS: Pick<CreateOptions, 'expectedInputs' | 'expectedOutputs'> = LANGUAGE_OPTS;
+
+export type NoApiHint = 'mobile' | 'other-browser' | 'edge' | 'chromium-other' | 'old-chrome';
 
 export type AiState =
   | { kind: 'checking' }
@@ -69,11 +76,39 @@ export function isMobileDevice(): boolean {
   return nav.userAgentData?.mobile ?? /Android|iPhone|iPad|iPod|CriOS/i.test(navigator.userAgent);
 }
 
-function noApiHint(): NoApiHint {
+export type BrowserKind = 'chrome' | 'edge' | 'other-chromium' | 'non-chromium';
+
+/** Which browser this is, so messages can name the right one (Edge users shouldn't be told to update Chrome). */
+export function browserKind(): BrowserKind {
+  const nav = navigator as Navigator & { userAgentData?: { brands?: { brand: string }[] }; brave?: unknown };
   const ua = navigator.userAgent;
+  const brands = (nav.userAgentData?.brands ?? []).map((b) => b.brand);
+  if (brands.includes('Microsoft Edge') || /\bEdg(e|A|iOS)?\//.test(ua)) return 'edge';
+  if (!/(Chrome|Chromium)\/\d+/.test(ua)) return 'non-chromium';
+  if (nav.brave || brands.some((b) => /Opera|Brave|Vivaldi/i.test(b)) || /OPR\/|Vivaldi\/|SamsungBrowser\/|YaBrowser\//.test(ua)) return 'other-chromium';
+  return 'chrome';
+}
+
+function noApiHint(): NoApiHint {
   if (isMobileDevice()) return 'mobile';
-  // Chrome, Edge, Brave and Opera all carry "Chrome/<version>". Firefox and Safari don't.
-  return /Chrome\/\d+/.test(ua) ? 'old-chrome' : 'other-browser';
+  const kind = browserKind();
+  return kind === 'non-chromium' ? 'other-browser' : kind === 'edge' ? 'edge' : kind === 'other-chromium' ? 'chromium-other' : 'old-chrome';
+}
+
+/** Availability, trying the language hints first and then no options at all. */
+async function probe(lm: LanguageModelStatic): Promise<Availability> {
+  try {
+    const a = await lm.availability(LANGUAGE_OPTS);
+    if (a !== 'unavailable') {
+      OPTS = LANGUAGE_OPTS;
+      return a;
+    }
+  } catch {
+    // some builds throw on options they don't know; try the plain form below
+  }
+  const plain = await lm.availability();
+  if (plain !== 'unavailable') OPTS = {};
+  return plain;
 }
 
 /** Looks at what this browser and computer can do. Safe to call often. */
@@ -85,7 +120,7 @@ export async function refreshAi(): Promise<void> {
     return;
   }
   try {
-    const a = await lm.availability(OPTS);
+    const a = await probe(lm);
     if (a === 'available') setState({ kind: 'ready' });
     else if (a === 'downloadable') setState({ kind: 'downloadable' });
     else if (a === 'downloading') setState({ kind: 'downloading', progress: null });
@@ -104,7 +139,10 @@ export async function enableAi(): Promise<void> {
     const session = await lm.create({
       ...OPTS,
       monitor(m) {
-        m.addEventListener('downloadprogress', (e) => setState({ kind: 'downloading', progress: e.loaded }));
+        m.addEventListener('downloadprogress', (e) => {
+          const fraction = e.total && e.total > 1 ? e.loaded / e.total : e.loaded;
+          setState({ kind: 'downloading', progress: Math.min(1, Math.max(0, fraction)) });
+        });
       },
     });
     session.destroy();

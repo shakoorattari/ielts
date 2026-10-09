@@ -101,11 +101,18 @@ learned words, your starting five, own sentences, timed tests) lives in `localSt
 The ✨ buttons on the rewrite drill, scanner, timed test and word pages give feedback on the learner's own
 writing. There are two engines, and the site works fully without either.
 
-1. **Chrome's built-in AI (preferred).** Uses the browser's
+1. **The browser's built-in AI (preferred).** Uses the standard
    [Prompt API](https://developer.chrome.com/docs/ai/prompt-api) (`LanguageModel`), a small model that runs on
-   the learner's own computer. Nothing is sent anywhere, there is no key and no cost. Chrome downloads the
-   model itself, once, after the learner clicks "Turn on the AI coach" (desktop Windows/Mac/Linux, about 22 GB
-   free disk).
+   the learner's own computer. Nothing is sent anywhere, there is no key and no cost. The browser downloads the
+   model itself, once, after the learner clicks "Turn on the AI coach" (about 20-22 GB free disk).
+   - **Chrome** (desktop Windows/Mac/Linux): stable.
+   - **Microsoft Edge**: the same API with Phi-4-mini, but still a
+     [developer preview](https://learn.microsoft.com/microsoft-edge/web-platform/prompt-api) that only exists in
+     Edge Canary and Dev behind the "Prompt API for on-device language model" flag, so regular Edge shows an
+     explanation, the flag steps for Insiders, and the free-key option. No Edge-specific code path is needed:
+     detection is by feature (`'LanguageModel' in self`), only the messages name the browser. Detection tries
+     the standard English language hints first and falls back to no options for builds that reject them, and
+     download progress accepts both a 0-1 fraction (Chrome) and bytes `loaded`/`total` (Edge's docs).
 2. **The learner's own free AI key (phones, tablets, Safari, Firefox, computers that can't run the model).**
    Groq, Google Gemini, or any OpenAI-compatible service. The learner creates a key with the provider and pastes
    it in; it is stored only in their browser (`localStorage`, `ielts-ai-cloud:v1`) and requests go straight from
