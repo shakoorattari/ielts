@@ -1,4 +1,4 @@
-import { askJson } from './chromeAi';
+import { askJson } from './aiEngine';
 import { TOPIC_LABEL, findSpan, type Syn, type SynWord } from './synonyms';
 
 /*

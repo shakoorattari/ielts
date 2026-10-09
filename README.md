@@ -96,23 +96,37 @@ learned words, your starting five, own sentences, timed tests) lives in `localSt
 "50 Synonyms That Actually Boost Your Score" guide by IELTS Advantage and credited in the app and in
 `index.html`. The YouTube embeds use `youtube-nocookie.com` and load only after the visitor presses play.
 
-## AI coach (Chrome's built-in AI)
+## AI coach
 
-The ✨ buttons on the rewrite drill, scanner, timed test and word pages use the browser's
-[Prompt API](https://developer.chrome.com/docs/ai/prompt-api) (`LanguageModel`), which runs a small model
-on the learner's own computer. Nothing is sent to this site or to any server, there is no API key and it
-costs nothing. Chrome downloads the model itself, once, after the learner clicks "Turn on the AI coach"
-(desktop Windows/Mac/Linux, about 22 GB free disk). Everything is feature-detected: other browsers, phones
-and computers that can't run it get a plain explanation (and a suggestion to open the page in Chrome),
-and the rest of the site is unaffected.
+The ✨ buttons on the rewrite drill, scanner, timed test and word pages give feedback on the learner's own
+writing. There are two engines, and the site works fully without either.
 
-- `src/lib/chromeAi.ts`: detection, the one-time download, and a JSON-constrained prompt helper.
-- `src/lib/aiCoach.ts`: the four tasks (review a sentence, review a paragraph, new example sentences,
-  when-to-use-which). Each asks for a fixed JSON shape and validates the answer before it is shown (a quoted
-  "problem" must appear in the learner's text; an example must contain the upgrade it claims).
-- `src/components/AiCoach.tsx`: the gate (browser / device / download states) and the panels.
+1. **Chrome's built-in AI (preferred).** Uses the browser's
+   [Prompt API](https://developer.chrome.com/docs/ai/prompt-api) (`LanguageModel`), a small model that runs on
+   the learner's own computer. Nothing is sent anywhere, there is no key and no cost. Chrome downloads the
+   model itself, once, after the learner clicks "Turn on the AI coach" (desktop Windows/Mac/Linux, about 22 GB
+   free disk).
+2. **The learner's own free AI key (phones, tablets, Safari, Firefox, computers that can't run the model).**
+   Groq, Google Gemini, or any OpenAI-compatible service. The learner creates a key with the provider and pastes
+   it in; it is stored only in their browser (`localStorage`, `ielts-ai-cloud:v1`) and requests go straight from
+   their browser to the provider, so this site has no server and no cost. Nothing is sent until they tick a
+   consent box, and the privacy line in every panel names the provider. The address must be `https://`. Models
+   are looked up from the provider's `/models` list rather than hard-coded, because names change often. Keys can
+   be removed under Settings.
 
-The coach judges vocabulary only and never gives a band score. The small model can be wrong, and the UI says so.
+Everything is feature-detected. Other browsers and phones get a plain explanation (and, for the on-device
+engine, a suggestion to open the page in Chrome on a computer). If both engines are available, on-device wins.
+
+- `src/lib/chromeAi.ts`: on-device detection, the one-time download, JSON-constrained prompts.
+- `src/lib/cloudAi.ts`: provider presets, key storage, OpenAI-style chat calls (JSON mode with a retry
+  without it), model discovery.
+- `src/lib/aiEngine.ts`: chooses the engine; `src/lib/aiCoach.ts`: the four tasks (review a sentence, review a
+  paragraph, new example sentences, when-to-use-which). Each asks for a fixed JSON shape and validates the answer
+  before it is shown (a quoted "problem" must appear in the learner's text; an example must contain the upgrade it
+  claims).
+- `src/components/AiCoach.tsx` (gate and panels) and `AiCloudSetup.tsx` (key setup).
+
+The coach judges vocabulary only and never gives a band score. The models can be wrong, and the UI says so.
 
 ## Getting started
 
@@ -199,6 +213,8 @@ src/
     useSynScope.ts         ?set=my / ?topic= / ?word= scope shared by every synonym practice mode
     essayLibrary.ts        on-demand loader for the essay text, used by the synonym pages
     chromeAi.ts            Chrome built-in AI: detection, one-time download, JSON prompts
+    cloudAi.ts             the learner's own free AI key: providers, storage, chat calls
+    aiEngine.ts            picks on-device or cloud for each request
     aiCoach.ts             the AI coach's tasks, prompts and answer validation
   components/               shared UI (nav layout)
   pages/                    one file per route
