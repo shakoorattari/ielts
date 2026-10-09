@@ -4,6 +4,7 @@ import { SpeakButton } from '../components/SpeakButton';
 import { SynonymCredit } from '../components/SynonymCredit';
 import { TOPIC_LABEL, WORDS, WORD_BY_N, analyze, cardId, findSpan, modelUsage, type ModelUsage, type Syn } from '../lib/synonyms';
 import { useEssayLibrary } from '../lib/essayLibrary';
+import { AiWordCoach } from '../components/AiCoach';
 import { MY_LIST_MAX, WORD_STAGES, stagesFor, useSynState } from '../lib/synState';
 
 const STATUS_STYLE: Record<string, string> = {
@@ -212,6 +213,8 @@ function WordView({ n }: { n: number }) {
       </section>
 
       <ModelExamples n={n} />
+
+      <AiWordCoach word={word} />
 
       <section className="rounded-2xl border border-line bg-surface p-4 shadow-sm sm:p-5">
         <h2 className="text-lg font-semibold">Use it in your own sentence</h2>

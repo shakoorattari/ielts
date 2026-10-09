@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { HighlightedText } from '../components/HighlightedText';
+import { AiTextReview } from '../components/AiCoach';
 import { WORD_BY_N, analyze, upgradeVerdict, type Segment } from '../lib/synonyms';
 import { essayPlainText, loadEssays, useEssayLibrary } from '../lib/essayLibrary';
 
@@ -249,6 +250,8 @@ export function SynScanner() {
               </Link>
             </section>
           )}
+
+          <AiTextReview text={text} />
 
           <div className="grid gap-4 md:grid-cols-2">
             <section className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
