@@ -31,10 +31,24 @@ function load(): ThemeKey {
   return 'auto';
 }
 
+/**
+ * The <meta name="theme-color"> tags in index.html follow the system light/dark setting. When a theme is picked
+ * explicitly, point them at its page colour instead, so the installed app's status bar matches the app. "Auto"
+ * puts back whatever index.html shipped.
+ */
+function syncBrowserColor(theme: ThemeKey) {
+  const page = THEMES.find((t) => t.key === theme)?.swatch[0];
+  document.querySelectorAll<HTMLMetaElement>('meta[name="theme-color"]').forEach((meta) => {
+    meta.dataset.auto ??= meta.content;
+    meta.content = theme === 'auto' || !page ? meta.dataset.auto : page;
+  });
+}
+
 function apply(theme: ThemeKey) {
   const root = document.documentElement;
   if (theme === 'auto') root.removeAttribute('data-theme');
   else root.setAttribute('data-theme', theme);
+  syncBrowserColor(theme);
 }
 
 let current: ThemeKey = load();
