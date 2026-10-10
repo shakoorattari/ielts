@@ -1,0 +1,33 @@
+{
+  "id": "/ielts/",
+  "name": "IELTS Band Builder",
+  "short_name": "IELTS Builder",
+  "description": "A free IELTS study guide: 1000 collocations, 50 synonym upgrades, model essays, flashcards, drills and quizzes. Works offline.",
+  "lang": "en",
+  "dir": "ltr",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f7f6f3",
+  "theme_color": "#f7f6f3",
+  "categories": ["education"],
+  "icons": [
+    {"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any"},
+    {"src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any"},
+    {"src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable"}
+  ],
+  "shortcuts": [
+    {"name": "Flashcards", "short_name": "Flashcards", "description": "Review the cards that are due", "url": "./#/flashcards", "icons": [{"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"}]},
+    {"name": "Quick quiz", "short_name": "Quiz", "description": "Multiple-choice collocation meanings", "url": "./#/quiz", "icons": [{"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"}]},
+    {"name": "Model essays", "short_name": "Essays", "description": "Read the Task 2 model essays", "url": "./#/essays", "icons": [{"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"}]},
+    {"name": "Synonym upgrades", "short_name": "Synonyms", "description": "50 plain words, upgraded", "url": "./#/synonyms", "icons": [{"src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png"}]}
+  ],
+  "screenshots": [
+    {"src": "screenshots/narrow-dashboard.png", "sizes": "780x1688", "type": "image/png", "form_factor": "narrow", "label": "Your dashboard: progress, streak and every way to practise"},
+    {"src": "screenshots/narrow-flashcards.png", "sizes": "780x1688", "type": "image/png", "form_factor": "narrow", "label": "Spaced-repetition flashcards for 1000 collocations"},
+    {"src": "screenshots/narrow-essay.png", "sizes": "780x1688", "type": "image/png", "form_factor": "narrow", "label": "A model essay with the key phrases highlighted"},
+    {"src": "screenshots/narrow-synonyms.png", "sizes": "780x1688", "type": "image/png", "form_factor": "narrow", "label": "50 plain words, upgraded, with drills and quizzes"},
+    {"src": "screenshots/wide-dashboard.png", "sizes": "1280x800", "type": "image/png", "form_factor": "wide", "label": "The dashboard on a computer"},
+    {"src": "screenshots/wide-essay.png", "sizes": "1280x800", "type": "image/png", "form_factor": "wide", "label": "A model essay with the key phrases highlighted"}
+  ]
+}

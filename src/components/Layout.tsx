@@ -3,6 +3,7 @@ import { NavLink, Outlet, useLocation } from 'react-router-dom';
 import { useProgress } from '../lib/progressContext';
 import { useCloudSync } from '../lib/cloudSyncContext';
 import { ThemeMenu } from './ThemeMenu';
+import { UpdateNotice } from './UpdateNotice';
 import { useRouteTitle } from '../lib/documentTitle';
 
 interface Leaf {
@@ -290,6 +291,8 @@ export function Layout() {
           . Corrections are welcome.
         </span>
       </footer>
+
+      <UpdateNotice />
     </div>
   );
 }

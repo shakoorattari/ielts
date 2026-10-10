@@ -4,6 +4,7 @@ import { ALL_ITEMS } from '../lib/collocations';
 import { MODE_META, formatWhen, scoreTone, themeName } from '../lib/attempts';
 import { TOTAL_ESSAYS, nextUnread, useEssayState } from '../lib/essayState';
 import { TOTAL_WORDS, dueCardCount, useSynState } from '../lib/synState';
+import { InstallNudge } from '../components/InstallApp';
 
 function StatCard({ label, value, sub, tone }: { label: string; value: string | number; sub?: string; tone: string }) {
   return (
@@ -38,6 +39,8 @@ export function Dashboard() {
               : 'No reviews due — great time to learn something new.'}
         </p>
       </section>
+
+      <InstallNudge />
 
       <section className="grid grid-cols-2 gap-3 sm:grid-cols-4">
         <StatCard label="Mastered" value={statusCounts.mastered} sub={`of ${total}`} tone="text-mint-ink" />

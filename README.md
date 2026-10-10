@@ -135,6 +135,71 @@ engine, a suggestion to open the page in Chrome on a computer). If both engines 
 
 The coach judges vocabulary only and never gives a band score. The models can be wrong, and the UI says so.
 
+## Installable app (PWA)
+
+The site is a Progressive Web App: it installs from the browser, opens full-screen from the home screen,
+works without a connection and updates itself. There is no server, so all of it is static files.
+
+- **Android, and Chrome/Edge on a computer.** The browser fires `beforeinstallprompt` when the app is
+  installable. `src/lib/pwa.ts` keeps that event, and the Dashboard card and Settings → *Install the app*
+  (`src/components/InstallApp.tsx`) offer a one-tap **Install** with it. The browser's own menu works too.
+- **iPhone and iPad.** Safari has no install prompt, so Settings shows the Share → Add to Home Screen steps.
+  The `apple-mobile-web-app-*` tags, the 180 px `apple-touch-icon.png` and a set of launch images (below) make
+  the result look right. **An installed iOS app gets its own storage, separate from Safari's**, so it starts with no progress. The card
+  says so and points at export/import and sync. Keep that warning if you reword it.
+- **Offline.** `dist/sw.js` precaches every built file, including the lazily loaded essay and synonym chunks,
+  and serves them cache-first. The PDF, `og-image.jpg`, `404.html` and `sitemap.xml` are left out. Cross-origin
+  requests (GitHub sync, AI providers, YouTube) are never touched, so those features simply need a connection.
+- **Updates.** Every build gets a version hashed from its contents, which makes `sw.js` byte-different, which is
+  how browsers notice it. A new build installs in the background and *waits*; the page shows "A new version is
+  ready" and only takes over when the person presses Reload (taking over unprompted could swap files out from
+  under a running page). Installed apps re-check whenever they return to the foreground.
+- **Status bar colour.** `src/lib/theme.ts` points `<meta name="theme-color">` at the chosen theme's page colour,
+  so a Sepia or Black theme doesn't sit under a mismatched status bar.
+- **Launch screens.** Android builds its own from the manifest's colour and icon. iOS shows a blank screen at launch
+  unless a launch image matches the device's pixel size *exactly*, so `public/splash/` holds one per screen size
+  (21 sizes, 30 files, 224 KB: every iPhone from the SE to the 17 Pro Max and Air, and every iPad in both
+  orientations). They are the white mark on the brand colour in light and dark mode alike.
+- **Richer install dialog.** `public/screenshots/` holds real captures of the app (4 phone, 2 desktop), listed in the
+  manifest, which makes Chrome show the install dialog with a preview instead of a bare prompt.
+
+How it is built:
+
+| File | Role |
+| --- | --- |
+| `public/manifest.webmanifest` | name, icons, `display: standalone`, home-screen shortcuts |
+| `public/icons/` | 192/512 px icons and a full-bleed maskable icon, from `npm run generate:icons` |
+| `public/splash/` | iOS launch images, and the `<link>` block in `index.html`, from `npm run generate:splash` |
+| `public/screenshots/` | install-dialog screenshots, from `npm run generate:screenshots` |
+| `scripts/lib/` | the logo renderer and PNG encoder the three generators share |
+| `scripts/sw-template.js` | the service worker. Edit this, never `dist/sw.js` |
+| `scripts/generate-sw.mjs` | `postbuild`: fills in the precache list and version, writes `dist/sw.js` |
+| `scripts/check-pwa.mjs` | `npm run check:pwa`, run in CI after `check:seo`; it checks every launch image's pixel size against its media query |
+| `src/lib/pwa.ts` | registers the worker, holds install and update state |
+
+Things that are easy to get wrong:
+
+- **The manifest `id` (`/ielts/`) is the app's identity.** Change it and every installed copy becomes a different
+  app. It must equal the canonical path in `index.html`; `check:pwa` enforces that. Moving the site to another
+  path means updating both on purpose.
+- `start_url` and `scope` are `./`, relative to the manifest, so they follow the app wherever it is served.
+- The worker is **registered only in production builds**. `npm run dev` never caches anything, so hot reload
+  works. To try the PWA, run `npm run build && npm run preview` and use DevTools → Application. Stop the server
+  and reload to see it work offline.
+- A change to `public/` or to the build output needs no manual step: new files are precached automatically.
+  A large optional download (like the PDF) belongs in `SKIP` in `scripts/generate-sw.mjs`.
+- If the logo changes, edit `public/favicon.svg`, mirror it in `scripts/lib/brand.mjs`, run
+  `npm run generate:icons && npm run generate:splash`, and commit the PNGs.
+- When Apple ships a new screen size, add it to `DEVICES` in `scripts/generate-splash.mjs` and rerun it. A size
+  with no launch image just gets iOS's blank screen; nothing breaks.
+- The launch images and screenshots are deliberately **not** precached (`SKIP_DIRS` in `scripts/generate-sw.mjs`):
+  only the installer looks at them, and the launch images alone would add ~220 KB to every first visit.
+  `check:pwa` fails if they sneak in.
+- Retake the screenshots when the UI changes enough to show: `npm run build && npm run generate:screenshots`
+  (needs Google Chrome, or `CHROME_BIN`). It drives Chrome over the DevTools pipe because a desktop window can't be
+  narrower than ~500 px, and pins the Light theme through the app's own setting. The flashcard shot shows a random
+  card, so that image differs each run.
+
 ## Getting started
 
 ```bash
@@ -155,7 +220,7 @@ hosted anywhere — GitHub Pages, Netlify, Vercel, or just opened locally.
 ## Deployment
 
 Every push to `main` triggers `.github/workflows/deploy.yml`, which builds the app, runs the SEO
-check and publishes `dist/` to GitHub Pages automatically — no manual deploy step. Pull requests run
+and PWA checks and publishes `dist/` to GitHub Pages automatically — no manual deploy step. Pull requests run
 the same build and check but never deploy.
 
 The site is served at **https://shakoorattari.com/ielts/**: this repository is a GitHub Pages project
@@ -223,12 +288,17 @@ src/
     cloudAi.ts             the learner's own free AI key: providers, storage, chat calls
     aiEngine.ts            picks on-device or cloud for each request
     aiCoach.ts             the AI coach's tasks, prompts and answer validation
-  components/               shared UI (nav layout)
+    pwa.ts                 service worker registration, install prompt and update state
+  components/               shared UI (nav layout, install card, update notice)
   pages/                    one file per route
 scripts/
   generate-sitemap.mjs     writes dist/sitemap.xml after the build
+  generate-sw.mjs          writes dist/sw.js from sw-template.js after the build
+  sw-template.js           the service worker (offline + update handling)
+  generate-icons.mjs       writes public/icons/*.png (`npm run generate:icons`)
   check-seo.mjs            post-build SEO guard (`npm run check:seo`)
-public/                    favicon, apple-touch-icon, og-image.jpg, 404.html, the essays PDF
+  check-pwa.mjs            post-build PWA guard (`npm run check:pwa`)
+public/                    favicon, icons/, manifest, apple-touch-icon, og-image.jpg, 404.html, the essays PDF
 ```
 
 ## Roadmap ideas
@@ -236,4 +306,3 @@ public/                    favicon, apple-touch-icon, og-image.jpg, 404.html, th
 - Audio pronunciation for each collocation
 - Speaking-practice mode with recording + self-review
 - Per-theme "exam readiness" score combining all four practice modes
-- PWA/offline support

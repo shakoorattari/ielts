@@ -3,6 +3,7 @@ import { useProgress } from '../lib/progressContext';
 import { useCloudSync } from '../lib/cloudSyncContext';
 import { ALL_ITEMS } from '../lib/collocations';
 import { AiCloudSetup } from '../components/AiCloudSetup';
+import { InstallCard } from '../components/InstallApp';
 import { useAiMode } from '../lib/aiEngine';
 
 function formatSyncTime(ms: number | null): string {
@@ -105,6 +106,8 @@ export function Settings() {
         </div>
         {message && <p className="mt-2 text-sm text-brand-600">{message}</p>}
       </section>
+
+      <InstallCard />
 
       <section className="rounded-2xl border border-line bg-surface p-5 shadow-sm">
         <h2 className="font-semibold">AI coach</h2>
