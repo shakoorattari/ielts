@@ -17,6 +17,7 @@ import { CloudSyncProvider } from './lib/cloudSyncContext';
 const Essays = lazy(() => import('./pages/Essays').then((m) => ({ default: m.Essays })));
 const EssayReader = lazy(() => import('./pages/EssayReader').then((m) => ({ default: m.EssayReader })));
 const PhraseBank = lazy(() => import('./pages/PhraseBank').then((m) => ({ default: m.PhraseBank })));
+const WritingLab = lazy(() => import('./pages/WritingLab').then((m) => ({ default: m.WritingLab })));
 // The synonym trainer likewise loads on demand.
 const SynonymsHub = lazy(() => import('./pages/SynonymsHub').then((m) => ({ default: m.SynonymsHub })));
 const SynonymWord = lazy(() => import('./pages/SynonymWord').then((m) => ({ default: m.SynonymWord })));
@@ -54,6 +55,7 @@ export function App() {
               <Route path="/fill-blank" element={<FillBlank />} />
               <Route path="/quiz" element={<MultipleChoice />} />
               <Route path="/writing" element={<Writing />} />
+              <Route path="/writing-lab" element={<WritingLab />} />
               <Route path="/tools" element={<ScoreTools />} />
               <Route path="/history" element={<History />} />
               <Route path="/settings" element={<Settings />} />
