@@ -17,6 +17,7 @@ const TITLES: Record<string, string> = {
   '/writing': 'Writing practice',
   '/writing-lab': 'Writing lab',
   '/speaking': 'Speaking studio',
+  '/plan': 'Study planner',
   '/tools': 'Score tools',
   '/history': 'History',
   '/synonyms': '50 synonym upgrades',

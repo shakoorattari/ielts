@@ -60,6 +60,7 @@ const NAV: (Leaf | Group)[] = [
   },
   { to: '/writing-lab', label: 'Writing lab', icon: '🧪' },
   { to: '/speaking', label: 'Speaking studio', icon: '🎤' },
+  { to: '/plan', label: 'Study planner', icon: '📅' },
   { to: '/tools', label: 'Score tools', icon: '🎯' },
   { to: '/history', label: 'History', icon: '🕘' },
 ];
