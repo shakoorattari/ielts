@@ -9,6 +9,7 @@ import { MultipleChoice } from './pages/MultipleChoice';
 import { Writing } from './pages/Writing';
 import { History } from './pages/History';
 import { Settings } from './pages/Settings';
+import { ScoreTools } from './pages/ScoreTools';
 import { ProgressProvider } from './lib/progressContext';
 import { CloudSyncProvider } from './lib/cloudSyncContext';
 
@@ -16,6 +17,9 @@ import { CloudSyncProvider } from './lib/cloudSyncContext';
 const Essays = lazy(() => import('./pages/Essays').then((m) => ({ default: m.Essays })));
 const EssayReader = lazy(() => import('./pages/EssayReader').then((m) => ({ default: m.EssayReader })));
 const PhraseBank = lazy(() => import('./pages/PhraseBank').then((m) => ({ default: m.PhraseBank })));
+const WritingLab = lazy(() => import('./pages/WritingLab').then((m) => ({ default: m.WritingLab })));
+const SpeakingStudio = lazy(() => import('./pages/SpeakingStudio').then((m) => ({ default: m.SpeakingStudio })));
+const StudyPlanner = lazy(() => import('./pages/StudyPlanner').then((m) => ({ default: m.StudyPlanner })));
 // The synonym trainer likewise loads on demand.
 const SynonymsHub = lazy(() => import('./pages/SynonymsHub').then((m) => ({ default: m.SynonymsHub })));
 const SynonymWord = lazy(() => import('./pages/SynonymWord').then((m) => ({ default: m.SynonymWord })));
@@ -53,6 +57,10 @@ export function App() {
               <Route path="/fill-blank" element={<FillBlank />} />
               <Route path="/quiz" element={<MultipleChoice />} />
               <Route path="/writing" element={<Writing />} />
+              <Route path="/writing-lab" element={<WritingLab />} />
+              <Route path="/speaking" element={<SpeakingStudio />} />
+              <Route path="/plan" element={<StudyPlanner />} />
+              <Route path="/tools" element={<ScoreTools />} />
               <Route path="/history" element={<History />} />
               <Route path="/settings" element={<Settings />} />
             </Route>

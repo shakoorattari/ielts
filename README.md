@@ -46,12 +46,58 @@ optional opt-in sync to keep it consistent across devices (see below).
 - **Phrase bank** — every highlighted key phrase from the essays, A–Z and searchable, with a short
   meaning and links to each essay it appears in.
 
+- **Writing lab** (`#/writing-lab`) — a full Task 2 essay in exam conditions: a question from the 68-question bank
+  (or your own), an optional 40-minute timer, and instant, deterministic checks on length (250-word minimum),
+  paragraphs, sentence length, linking words by function, repeated words and sentence openers, informal wording
+  (contractions, "kids", "a lot of"), and which of the 1000 collocations you used. It finishes with a self-assessment
+  against the four marking criteria (descriptors paraphrased from the public band descriptors) that yields an estimated
+  band. The checks are mechanical and never judge ideas or grammar; the page says so. Drafts and saved attempts are kept
+  in `localStorage` (`ielts-lab:v1`).
+- **Speaking studio** (`#/speaking`) — Part 1 (19 topics), Part 2 (24 cue cards, 60 s preparation with a notes box,
+  2 min speaking, auto-stop at the limit) and Part 3 (the linked discussion questions), or a full mock test. All
+  questions are original. Optionally **record** each answer for playback and, separately, show a **live transcript**
+  with pace, filler words and collocations used. Ends with a four-criteria self-rating. See *Speaking and privacy*.
+- **Study planner** (`#/plan`) — exam date, target band, daily time and weakest area become a checklist for each day.
+  It changes with the time left (build, practise, final week, exam eve) and ties tasks to the in-app tools.
+- **Score tools** (`#/tools`) — overall band using the published ielts.org rounding rule, the band needed in one
+  remaining skill to hit a target, and Listening / Reading (Academic and General Training) mark-to-band conversion.
+
 Every practice mode feeds the same per-item mastery record, so progress made in any mode
 moves that collocation through the same new → learning → review → mastered pipeline.
 
 In-progress rounds (current queue/question, index, running score) are persisted to
 `localStorage` as you go, so refreshing the page mid-session resumes exactly where you left
 off instead of starting over.
+
+## Speaking and privacy
+
+The Speaking studio never uploads audio. Recording uses `MediaRecorder`; the audio lives in memory as an object URL for
+playback and is revoked when the learner leaves the page (it is never written to `localStorage`, only the on/off choices
+are). The **live transcript** is a separate opt-in because it is different: Chrome's `SpeechRecognition` sends the voice
+to Google's speech service (Edge to Microsoft's), and the setup screen says so in plain words. Both options are
+feature-detected and disabled with an explanation where the browser lacks them, and a blocked or missing microphone
+falls back to a timers-only answer instead of failing. `src/lib/voice.ts` holds all of it.
+
+## Testing
+
+```bash
+npm test            # Vitest + Testing Library + axe, ~160 tests
+npm run test:watch
+```
+
+CI runs `lint`, `test`, `build`, `check:seo` and `check:pwa` on every push and pull request. The tests cover:
+
+- **Logic:** SM-2 scheduling, typo-tolerant matching, sync merging, storage round-trips, band arithmetic (including the
+  .25 / .75 rounding rule and monotonicity), the writing analyser, speaking statistics, the study-plan engine.
+- **Data integrity:** the 1000 collocations (counts, completeness, duplicates) and the speaking question bank.
+- **Components:** each new page end to end, including timers (fake clock), the microphone path (mocked
+  `MediaRecorder` / `SpeechRecognition`), permission errors, corrupt `localStorage`, and cleanup on leaving.
+- **Every route renders** without crashing, and the new pages and the dashboard pass axe accessibility checks.
+  jsdom cannot measure colour contrast, so that rule is off in tests and contrast stays guaranteed by the theme tokens
+  (see *SEO*).
+
+Persistent per-feature data goes through `src/lib/localStore.ts` (one tested helper: validates whatever is stored, so
+old or corrupted data cannot crash a page; survives blocked storage; syncs open tabs).
 
 ## Syncing progress across devices
 
@@ -289,6 +335,13 @@ src/
     aiEngine.ts            picks on-device or cloud for each request
     aiCoach.ts             the AI coach's tasks, prompts and answer validation
     pwa.ts                 service worker registration, install prompt and update state
+    bands.ts               overall-band rounding, band-needed, raw mark to band tables
+    writingAnalysis.ts     deterministic Task 2 checks (length, linking, repetition, informal wording, collocations)
+    speakingStats.ts       fillers, words per minute, answer-length verdicts
+    speakingSession.ts     builds the question queue for each speaking mode
+    voice.ts               microphone recording and optional speech-to-text, with error mapping
+    studyPlan.ts           the day-by-day plan engine (pure, deterministic)
+    localStore.ts          validated localStorage store shared by labState, speakingState, planState
   components/               shared UI (nav layout, install card, update notice)
   pages/                    one file per route
 scripts/
@@ -303,6 +356,8 @@ public/                    favicon, icons/, manifest, apple-touch-icon, og-image
 
 ## Roadmap ideas
 
+- Listening dictation using the browser's speech synthesis (original texts, no copyrighted audio)
+- Writing Task 1 (charts and letters) practice
 - Audio pronunciation for each collocation
-- Speaking-practice mode with recording + self-review
 - Per-theme "exam readiness" score combining all four practice modes
+- Translated interface (Arabic, Urdu, Hindi, Spanish, Chinese) — needs native-speaker review

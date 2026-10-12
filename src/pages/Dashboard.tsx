@@ -86,6 +86,28 @@ export function Dashboard() {
         </Link>
       </section>
 
+      <section aria-labelledby="skills-h">
+        <h2 id="skills-h" className="mb-3 text-lg font-semibold">
+          Practise the exam skills
+        </h2>
+        <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          {[
+            { to: '/writing-lab', icon: '🧪', title: 'Writing lab', text: 'Timed Task 2 with instant checks on length, linking words and repetition' },
+            { to: '/speaking', icon: '🎤', title: 'Speaking studio', text: 'Parts 1, 2 and 3 with real timers. Record yourself and listen back' },
+            { to: '/plan', icon: '📅', title: 'Study planner', text: 'A daily checklist that adapts to your exam date and time' },
+            { to: '/tools', icon: '🎯', title: 'Score tools', text: 'Overall band calculator and practice-test mark converter' },
+          ].map((c) => (
+            <Link key={c.to} to={c.to} className="rounded-2xl border border-line bg-surface p-5 shadow-sm transition hover:border-brand-300 hover:shadow-md">
+              <p className="text-2xl" aria-hidden>
+                {c.icon}
+              </p>
+              <p className="mt-2 font-semibold">{c.title}</p>
+              <p className="mt-1 text-sm text-ink-soft">{c.text}</p>
+            </Link>
+          ))}
+        </div>
+      </section>
+
       <section className="grid gap-3 lg:grid-cols-2">
         <Link
           to="/synonyms"
