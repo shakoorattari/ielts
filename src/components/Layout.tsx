@@ -58,10 +58,24 @@ const NAV: (Leaf | Group)[] = [
       { to: '/phrases', label: 'Phrase bank', icon: '💬' },
     ],
   },
-  { to: '/writing-lab', label: 'Writing lab', icon: '🧪' },
-  { to: '/speaking', label: 'Speaking studio', icon: '🎤' },
-  { to: '/plan', label: 'Study planner', icon: '📅' },
-  { to: '/tools', label: 'Score tools', icon: '🎯' },
+  {
+    label: 'Skills',
+    icon: '🎤',
+    prefixes: ['/writing-lab', '/speaking'],
+    items: [
+      { to: '/writing-lab', label: 'Writing lab', icon: '🧪' },
+      { to: '/speaking', label: 'Speaking studio', icon: '🎤' },
+    ],
+  },
+  {
+    label: 'Plan',
+    icon: '🎯',
+    prefixes: ['/plan', '/tools'],
+    items: [
+      { to: '/plan', label: 'Study planner', icon: '📅' },
+      { to: '/tools', label: 'Score tools', icon: '🎯' },
+    ],
+  },
   { to: '/history', label: 'History', icon: '🕘' },
 ];
 
