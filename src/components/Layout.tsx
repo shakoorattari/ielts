@@ -58,6 +58,7 @@ const NAV: (Leaf | Group)[] = [
       { to: '/phrases', label: 'Phrase bank', icon: '💬' },
     ],
   },
+  { to: '/tools', label: 'Score tools', icon: '🎯' },
   { to: '/history', label: 'History', icon: '🕘' },
 ];
 

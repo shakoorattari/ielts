@@ -9,6 +9,7 @@ import { MultipleChoice } from './pages/MultipleChoice';
 import { Writing } from './pages/Writing';
 import { History } from './pages/History';
 import { Settings } from './pages/Settings';
+import { ScoreTools } from './pages/ScoreTools';
 import { ProgressProvider } from './lib/progressContext';
 import { CloudSyncProvider } from './lib/cloudSyncContext';
 
@@ -53,6 +54,7 @@ export function App() {
               <Route path="/fill-blank" element={<FillBlank />} />
               <Route path="/quiz" element={<MultipleChoice />} />
               <Route path="/writing" element={<Writing />} />
+              <Route path="/tools" element={<ScoreTools />} />
               <Route path="/history" element={<History />} />
               <Route path="/settings" element={<Settings />} />
             </Route>
